@@ -15,7 +15,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 80px;
+  height: 60px;
   display: flex;
   background-color: var(--bg-color);
   border-top: 1px solid var(--border-color);
