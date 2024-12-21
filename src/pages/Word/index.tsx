@@ -2,54 +2,84 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Input, Card, Space, Typography } from "@douyinfe/semi-ui";
 import { IWord } from "@/services/types";
+import { getWords, addWord, deleteWord } from "@/services/firebase/words";
+import { observer } from "mobx-react-lite";
+import authStore from "@/stores/AuthStore";
+
 const { Text, Title } = Typography;
 
-const Word = () => {
+const Word = observer(() => {
   const { t } = useTranslation();
   const [words, setWords] = useState<IWord[]>([]);
   const [japanese, setJapanese] = useState("");
   const [chinese, setChinese] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const loadWords = useCallback(async () => {
+    if (!authStore.user?.uid) return;
+    try {
+      const fetchedWords = await getWords(authStore.user.uid);
+      setWords(fetchedWords);
+    } catch (error) {
+      console.error("Error loading words:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [authStore.user?.uid]);
 
   useEffect(() => {
-    const savedWords = localStorage.getItem("words");
-    if (savedWords) {
-      setWords(JSON.parse(savedWords));
-    }
-  }, []);
+    loadWords();
+  }, [loadWords]);
 
   const handleAddWord = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
-      if (japanese.trim() && chinese.trim()) {
-        const newWord: IWord = {
-          id: Date.now().toString(),
+      if (!authStore.user?.uid || !japanese.trim() || !chinese.trim()) return;
+
+      try {
+        const newWord: Omit<IWord, "id"> = {
           japanese: japanese.trim(),
           chinese: chinese.trim(),
           createdAt: Date.now(),
-          nextReviewDate: Date.now() + 24 * 60 * 60 * 1000, // 1天后复习
+          nextReviewDate: Date.now(), // 当天
           reviewCount: 0,
           correctCount: 0,
           stage: 0,
         };
 
-        const updatedWords = [...words, newWord];
-        localStorage.setItem("words", JSON.stringify(updatedWords));
-        setWords(updatedWords);
+        await addWord(authStore.user.uid, newWord);
+        await loadWords(); // Reload words after adding
         setJapanese("");
         setChinese("");
+      } catch (error) {
+        console.error("Error adding word:", error);
       }
     },
-    [japanese, chinese, words]
+    [japanese, chinese, authStore.user?.uid, loadWords]
   );
 
   const handleDelete = useCallback(
-    (wordId: string) => {
-      const updatedWords = words.filter((word) => word.id !== wordId);
-      localStorage.setItem("words", JSON.stringify(updatedWords));
-      setWords(updatedWords);
+    async (wordId: string) => {
+      if (!authStore.user?.uid) return;
+      try {
+        await deleteWord(authStore.user.uid, wordId);
+        await loadWords();
+      } catch (error) {
+        console.error("Error deleting word:", error);
+      }
     },
-    [words]
+    [authStore.user?.uid, loadWords]
   );
+
+  if (!authStore.user) {
+    return (
+      <div className="container safe-area-inset-bottom">
+        <Card className="mt-lg">
+          <Text>{t("common.pleaseLogin")}</Text>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container safe-area-inset-bottom">
@@ -96,7 +126,9 @@ const Word = () => {
               {t("addWord.listTitle")}
             </Title>
             <Space vertical align="start" style={{ width: "100%" }}>
-              {words.length === 0 ? (
+              {loading ? (
+                <Text type="tertiary">{t("common.loading")}</Text>
+              ) : words.length === 0 ? (
                 <Text type="tertiary">{t("addWord.emptyList")}</Text>
               ) : (
                 [...words]
@@ -142,6 +174,6 @@ const Word = () => {
       </Card>
     </div>
   );
-};
+});
 
 export default Word;

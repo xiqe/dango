@@ -8,6 +8,7 @@ export default {
     chinese: "中国語",
     addButton: "追加",
     deleteButton: "削除",
+    loading: "ローディング中...",
   },
   nav: {
     task: "タスク",

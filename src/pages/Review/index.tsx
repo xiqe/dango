@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Card, Typography, Space, Progress } from "@douyinfe/semi-ui";
 import { IWord } from "@/services/types";
+import { getWords, updateWordProgress } from "@/services/firebase/words";
+import authStore from "@/stores/AuthStore";
 
 const { Text, Title } = Typography;
 
@@ -15,15 +17,17 @@ const Review = () => {
     null
   );
 
-  const loadWords = useCallback(() => {
-    const savedWords = localStorage.getItem("words");
-    if (savedWords) {
-      const parsedWords = JSON.parse(savedWords);
-      setWords(parsedWords);
-      const reviewWords = parsedWords.filter(
+  const loadWords = useCallback(async () => {
+    if (!authStore.user?.uid) return;
+    try {
+      const fetchedWords = await getWords(authStore.user.uid);
+      setWords(fetchedWords);
+      const reviewWords = fetchedWords.filter(
         (word: IWord) => word.nextReviewDate <= Date.now()
       );
       setCurrentReviewWord(reviewWords[0] || null);
+    } catch (error) {
+      console.error("Error loading words from Firestore:", error);
     }
   }, []);
 
@@ -31,13 +35,8 @@ const Review = () => {
     loadWords();
   }, [loadWords]);
 
-  const saveToLocalStorage = useCallback((updatedWords: IWord[]) => {
-    localStorage.setItem("words", JSON.stringify(updatedWords));
-    setWords(updatedWords);
-  }, []);
-
   const handleReview = useCallback(
-    (remembered: boolean) => {
+    async (remembered: boolean) => {
       if (currentReviewWord) {
         const updatedWords = words.map((word) => {
           if (word.id === currentReviewWord.id) {
@@ -59,7 +58,37 @@ const Review = () => {
           return word;
         });
 
-        saveToLocalStorage(updatedWords);
+        // 更新 Firestore 数据
+        try {
+          if (!authStore.user?.uid) return;
+          await updateWordProgress(authStore.user?.uid, currentReviewWord.id, {
+            reviewCount: currentReviewWord.reviewCount + 1,
+            correctCount: remembered
+              ? currentReviewWord.correctCount + 1
+              : currentReviewWord.correctCount,
+            stage: remembered
+              ? Math.min(
+                  currentReviewWord.stage + 1,
+                  REVIEW_INTERVALS.length - 1
+                )
+              : Math.max(0, currentReviewWord.stage - 1),
+            nextReviewDate:
+              Date.now() +
+              REVIEW_INTERVALS[
+                Math.min(
+                  currentReviewWord.stage + 1,
+                  REVIEW_INTERVALS.length - 1
+                )
+              ] *
+                24 *
+                60 *
+                60 *
+                1000,
+          });
+        } catch (error) {
+          console.error("Error updating word progress in Firestore:", error);
+        }
+
         const remainingWords = updatedWords.filter(
           (word) => word.nextReviewDate <= Date.now()
         );
@@ -67,7 +96,7 @@ const Review = () => {
         setShowAnswer(false);
       }
     },
-    [currentReviewWord, words, saveToLocalStorage]
+    [currentReviewWord, words]
   );
 
   const getProgress = useCallback(() => {

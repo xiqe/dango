@@ -7,7 +7,7 @@ import {
   User,
   AuthError,
 } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth } from "@/config/firebase";
 
 export const signIn = async (email: string, password: string) => {
   try {
