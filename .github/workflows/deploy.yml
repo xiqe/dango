@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - main
-    workflow_dispatch:
-      inputs:
-        environment:
-          description: "Deploy environment (e.g., staging, production)"
-          required: true
-          default: "production"
 
 jobs:
   build-and-deploy:
