@@ -10,6 +10,12 @@
   width: 80vw;
 }
 
+.solgen {
+  font-size: 40px;
+  font-weight: var(--font-weight-semi-bold);
+  margin-bottom: 48px;
+}
+
 .title {
   text-align: center;
   font-size: var(--font-size-xl);

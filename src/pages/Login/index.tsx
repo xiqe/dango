@@ -52,6 +52,7 @@ const Login = observer(() => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
+        <h1 className={styles.solgen}>{t("login.solgen")}</h1>
         <div className={styles.title}>
           {isLogin ? t("login.title.login") : t("login.title.register")}
         </div>

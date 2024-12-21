@@ -50,6 +50,7 @@ export default {
     passwordUpdateError: "パスワードの更新に失敗しました",
   },
   login: {
+    solgen: "忘れる前に覚える、新しい単語習得の旅へ。",
     title: {
       login: "ログイン",
       register: "新規登録",
