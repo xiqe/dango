@@ -1,0 +1,41 @@
+export default {
+  common: {
+    return: "戻る",
+    update: "更新",
+    delete: "削除",
+    detail: "詳細",
+    suspend: "中止",
+    no: "いいえ",
+    yes: "はい",
+    edit: "編集",
+    close: "閉じる",
+    confirm: "確定",
+    editConfirm: "編集の確認",
+    successCreatedMsg: "{{name}}追加に成功しました",
+    errorCreatedMsg: "{{name}}追加に失敗しました",
+    successDeletedMsg: "{{name}}削除に成功しました",
+    errorDeletedMsg: "{{name}}削除に失敗しました",
+    successUpdatedMsg: "{{name}}更新に成功しました",
+    errorUpdatedMsg: "{{name}}更新に失敗しました",
+  },
+  dashboard: "Dashboard",
+
+  login: {
+    title: "Welcome to GDS",
+    email: "メールアドレス",
+    password: "パスワード",
+    signIn: "ログイン",
+    forgotPassword: "パスワードをお忘れの場合",
+    googleLogin: "Googleでログイン",
+  },
+  password: {
+    changePassword: "パスワード変更",
+    resetPassword: "パスワード再設定",
+    sendResetEmail: "パスワードリセットメールを送信する",
+    sendResetEmailSuccess:
+      "パスワード再設定用のURLが{{email}}に送信されます、ご確認のうえパスワードをリセットしてください。",
+    oldPassword: "以前のパスワード",
+    newPassword: "新しいパスワード",
+    changePasswordSuccess: "パスワードを変更しました。",
+  },
+};
