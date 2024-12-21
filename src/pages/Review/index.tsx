@@ -4,7 +4,7 @@ import { Button, Typography, Space, Progress } from "@douyinfe/semi-ui";
 import { IWord } from "@/services/types";
 import { getWords, updateWordProgress } from "@/services/firebase/words";
 import authStore from "@/stores/AuthStore";
-import styles from "./Review.module.css";
+import styles from "./review.module.css";
 
 const { Text, Title } = Typography;
 
