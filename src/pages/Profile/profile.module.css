@@ -1,0 +1,40 @@
+.container {
+  padding: var(--space-md);
+}
+
+.userInfo {
+  background: var(--bg-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.email {
+  color: var(--text-color-secondary);
+  margin-top: var(--space-sm);
+}
+
+.actionSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+.actionButton {
+  width: 100%;
+}
+
+.version {
+  text-align: center;
+  color: var(--text-color-light);
+  margin-top: var(--space-xl);
+  font-size: var(--font-size-sm);
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}

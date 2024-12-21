@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@douyinfe/semi-ui": "^2.72.0",
     "firebase": "^10.7.0",
     "i18next": "^23.7.7",
     "i18next-browser-languagedetector": "^7.2.0",
