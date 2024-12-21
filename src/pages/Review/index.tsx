@@ -1,83 +1,76 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Card, Typography, Space, Progress } from "@douyinfe/semi-ui";
-import { useNavigate } from "react-router-dom";
+import { IWord } from "@/services/types";
 
 const { Text, Title } = Typography;
-
-interface Word {
-  id: string;
-  japanese: string;
-  chinese: string;
-  createdAt: number;
-  nextReviewDate: number;
-  reviewCount: number;
-  correctCount: number;
-  stage: number;
-}
 
 const REVIEW_INTERVALS = [1, 2, 4, 7, 15, 30, 60];
 
 const Review = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [words, setWords] = useState<Word[]>([]);
+  const [words, setWords] = useState<IWord[]>([]);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [currentReviewWord, setCurrentReviewWord] = useState<Word | null>(null);
+  const [currentReviewWord, setCurrentReviewWord] = useState<IWord | null>(
+    null
+  );
 
-  useEffect(() => {
-    loadWords();
-  }, []);
-
-  const loadWords = () => {
+  const loadWords = useCallback(() => {
     const savedWords = localStorage.getItem("words");
     if (savedWords) {
       const parsedWords = JSON.parse(savedWords);
       setWords(parsedWords);
       const reviewWords = parsedWords.filter(
-        (word: Word) => word.nextReviewDate <= Date.now()
+        (word: IWord) => word.nextReviewDate <= Date.now()
       );
       setCurrentReviewWord(reviewWords[0] || null);
     }
-  };
+  }, []);
 
-  const saveToLocalStorage = (updatedWords: Word[]) => {
+  useEffect(() => {
+    loadWords();
+  }, [loadWords]);
+
+  const saveToLocalStorage = useCallback((updatedWords: IWord[]) => {
     localStorage.setItem("words", JSON.stringify(updatedWords));
     setWords(updatedWords);
-  };
+  }, []);
 
-  const handleReview = (remembered: boolean) => {
-    if (currentReviewWord) {
-      const updatedWords = words.map((word) => {
-        if (word.id === currentReviewWord.id) {
-          const newStage = remembered
-            ? Math.min(word.stage + 1, REVIEW_INTERVALS.length - 1)
-            : Math.max(0, word.stage - 1);
+  const handleReview = useCallback(
+    (remembered: boolean) => {
+      if (currentReviewWord) {
+        const updatedWords = words.map((word) => {
+          if (word.id === currentReviewWord.id) {
+            const newStage = remembered
+              ? Math.min(word.stage + 1, REVIEW_INTERVALS.length - 1)
+              : Math.max(0, word.stage - 1);
 
-          return {
-            ...word,
-            reviewCount: word.reviewCount + 1,
-            correctCount: remembered
-              ? word.correctCount + 1
-              : word.correctCount,
-            stage: newStage,
-            nextReviewDate:
-              Date.now() + REVIEW_INTERVALS[newStage] * 24 * 60 * 60 * 1000,
-          };
-        }
-        return word;
-      });
+            return {
+              ...word,
+              reviewCount: word.reviewCount + 1,
+              correctCount: remembered
+                ? word.correctCount + 1
+                : word.correctCount,
+              stage: newStage,
+              nextReviewDate:
+                Date.now() + REVIEW_INTERVALS[newStage] * 24 * 60 * 60 * 1000,
+            };
+          }
+          return word;
+        });
 
-      saveToLocalStorage(updatedWords);
-      const remainingWords = updatedWords.filter(
-        (word) => word.nextReviewDate <= Date.now()
-      );
-      setCurrentReviewWord(remainingWords[0] || null);
-      setShowAnswer(false);
-    }
-  };
+        saveToLocalStorage(updatedWords);
+        const remainingWords = updatedWords.filter(
+          (word) => word.nextReviewDate <= Date.now()
+        );
+        setCurrentReviewWord(remainingWords[0] || null);
+        setShowAnswer(false);
+      }
+    },
+    [currentReviewWord, words, saveToLocalStorage]
+  );
 
-  const getProgress = () => {
+  const getProgress = useCallback(() => {
     const totalReviews = words.reduce((sum, word) => sum + word.reviewCount, 0);
     const totalCorrect = words.reduce(
       (sum, word) => sum + word.correctCount,
@@ -86,7 +79,7 @@ const Review = () => {
     const correctRate =
       totalReviews > 0 ? (totalCorrect / totalReviews) * 100 : 0;
     return { correctRate, totalReviews };
-  };
+  }, [words]);
 
   const progress = getProgress();
   const todayWords = words.filter(

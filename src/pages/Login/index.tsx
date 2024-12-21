@@ -1,52 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Card, Input, Button, Toast, Typography } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
 import authStore from "../../stores/AuthStore";
 import styles from "./login.module.css";
 
 const { Title } = Typography;
 
 const Login = observer(() => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const toggleLoginRegister = useCallback(() => {
+    setIsLogin((prev) => !prev);
+  }, []);
 
-    if (!email || !password) {
-      Toast.error("メールアドレスとパスワードを入力してください。");
-      return;
-    }
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    const success = isLogin
-      ? await authStore.login(email, password)
-      : await authStore.register(email, password);
+      if (!email || !password) {
+        Toast.error(
+          t("login.errorMessages.emailRequired") +
+            " " +
+            t("login.errorMessages.passwordRequired")
+        );
+        return;
+      }
 
-    if (success) {
-      Toast.success(isLogin ? "ログインしました" : "登録しました");
-    } else {
-      Toast.error(isLogin ? "ログインに失敗しました" : "登録に失敗しました");
-    }
-  };
+      const success = isLogin
+        ? await authStore.login(email, password)
+        : await authStore.register(email, password);
+
+      if (success) {
+        Toast.success(
+          isLogin
+            ? t("login.successMessages.loginSuccess")
+            : t("login.successMessages.registerSuccess")
+        );
+      } else {
+        Toast.error(
+          isLogin
+            ? t("login.errorMessages.loginFailed")
+            : t("login.errorMessages.registerFailed")
+        );
+      }
+    },
+    [email, password, isLogin, t]
+  );
 
   return (
     <div className={styles.container}>
       <Card className={styles.card}>
         <Title heading={3} className={styles.title}>
-          {isLogin ? "ログイン" : "新規登録"}
+          {isLogin ? t("login.title.login") : t("login.title.register")}
         </Title>
         <form onSubmit={handleSubmit} className={styles.form}>
           <Input
             type="email"
-            placeholder="メールアドレス"
+            placeholder={t("login.placeholder.email")}
             value={email}
             onChange={setEmail}
             className={styles.input}
           />
           <Input
             type="password"
-            placeholder="パスワード"
+            placeholder={t("login.placeholder.password")}
             value={password}
             onChange={setPassword}
             className={styles.input}
@@ -57,15 +78,17 @@ const Login = observer(() => {
             block
             className={styles.button}
           >
-            {isLogin ? "ログイン" : "登録"}
+            {isLogin ? t("login.button.login") : t("login.button.register")}
           </Button>
           <Button
             type="tertiary"
             block
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={toggleLoginRegister}
             className={styles.switchButton}
           >
-            {isLogin ? "新規登録へ" : "ログインへ"}
+            {isLogin
+              ? t("login.button.switchToRegister")
+              : t("login.button.switchToLogin")}
           </Button>
         </form>
       </Card>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import {
   Card,
@@ -20,35 +20,35 @@ const Profile = observer(() => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       await authStore.logout();
       Toast.success(t("profile.logoutSuccess"));
     } catch (error) {
       Toast.error(t("profile.logoutError"));
     }
-  };
+  }, [t]);
 
-  const handleUpdatePassword = async (values: {
-    newPassword: string;
-    confirmPassword: string;
-  }) => {
-    if (values.newPassword !== values.confirmPassword) {
-      Toast.error(t("profile.passwordMismatch"));
-      return;
-    }
+  const handleUpdatePassword = useCallback(
+    async (values: { newPassword: string; confirmPassword: string }) => {
+      if (values.newPassword !== values.confirmPassword) {
+        Toast.error(t("profile.passwordMismatch"));
+        return;
+      }
 
-    setLoading(true);
-    try {
-      await authStore.updatePassword(values.newPassword);
-      Toast.success(t("profile.passwordUpdateSuccess"));
-      setShowPasswordModal(false);
-    } catch (error) {
-      Toast.error(t("profile.passwordUpdateError"));
-    } finally {
-      setLoading(false);
-    }
-  };
+      setLoading(true);
+      try {
+        await authStore.updatePassword(values.newPassword);
+        Toast.success(t("profile.passwordUpdateSuccess"));
+        setShowPasswordModal(false);
+      } catch (error) {
+        Toast.error(t("profile.passwordUpdateError"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t]
+  );
 
   return (
     <div className={styles.container}>

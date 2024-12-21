@@ -1,19 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Input, Card, Space, Typography } from "@douyinfe/semi-ui";
-
+import { IWord } from "@/services/types";
 const { Text, Title } = Typography;
-
-interface IWord {
-  id: string;
-  japanese: string;
-  chinese: string;
-  createdAt: number;
-  nextReviewDate: number;
-  reviewCount: number;
-  correctCount: number;
-  stage: number;
-}
 
 const Word = () => {
   const { t } = useTranslation();
@@ -28,33 +17,39 @@ const Word = () => {
     }
   }, []);
 
-  const handleAddWord = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (japanese.trim() && chinese.trim()) {
-      const newWord: IWord = {
-        id: Date.now().toString(),
-        japanese: japanese.trim(),
-        chinese: chinese.trim(),
-        createdAt: Date.now(),
-        nextReviewDate: Date.now() + 24 * 60 * 60 * 1000, // 1天后复习
-        reviewCount: 0,
-        correctCount: 0,
-        stage: 0,
-      };
+  const handleAddWord = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (japanese.trim() && chinese.trim()) {
+        const newWord: IWord = {
+          id: Date.now().toString(),
+          japanese: japanese.trim(),
+          chinese: chinese.trim(),
+          createdAt: Date.now(),
+          nextReviewDate: Date.now() + 24 * 60 * 60 * 1000, // 1天后复习
+          reviewCount: 0,
+          correctCount: 0,
+          stage: 0,
+        };
 
-      const updatedWords = [...words, newWord];
+        const updatedWords = [...words, newWord];
+        localStorage.setItem("words", JSON.stringify(updatedWords));
+        setWords(updatedWords);
+        setJapanese("");
+        setChinese("");
+      }
+    },
+    [japanese, chinese, words]
+  );
+
+  const handleDelete = useCallback(
+    (wordId: string) => {
+      const updatedWords = words.filter((word) => word.id !== wordId);
       localStorage.setItem("words", JSON.stringify(updatedWords));
       setWords(updatedWords);
-      setJapanese("");
-      setChinese("");
-    }
-  };
-
-  const handleDelete = (wordId: string) => {
-    const updatedWords = words.filter((word) => word.id !== wordId);
-    localStorage.setItem("words", JSON.stringify(updatedWords));
-    setWords(updatedWords);
-  };
+    },
+    [words]
+  );
 
   return (
     <div className="container safe-area-inset-bottom">

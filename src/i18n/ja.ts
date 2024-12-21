@@ -8,7 +8,6 @@ export default {
     chinese: "中国語",
     addButton: "追加",
     deleteButton: "削除",
-    loading: "ローディング中...",
   },
   nav: {
     task: "タスク",
@@ -48,5 +47,31 @@ export default {
     passwordMismatch: "パスワードが一致しません",
     passwordUpdateSuccess: "パスワードを更新しました",
     passwordUpdateError: "パスワードの更新に失敗しました",
+  },
+  login: {
+    title: {
+      login: "ログイン",
+      register: "新規登録",
+    },
+    placeholder: {
+      email: "メールアドレス",
+      password: "パスワード",
+    },
+    button: {
+      login: "ログイン",
+      register: "登録",
+      switchToRegister: "新規登録へ",
+      switchToLogin: "ログインへ",
+    },
+    errorMessages: {
+      emailRequired: "メールアドレスを入力してください。",
+      passwordRequired: "パスワードを入力してください。",
+      loginFailed: "ログインに失敗しました",
+      registerFailed: "登録に失敗しました",
+    },
+    successMessages: {
+      loginSuccess: "ログインしました",
+      registerSuccess: "登録しました",
+    },
   },
 };

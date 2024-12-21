@@ -2,7 +2,6 @@ import "@douyinfe/semi-ui/dist/css/semi.min.css";
 import "@/styles/root.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { useTranslation } from "react-i18next";
 import { Spin } from "@douyinfe/semi-ui";
 import authStore from "./stores/AuthStore";
 import Layout from "./components/Layout";
@@ -16,8 +15,6 @@ const PrivateRoute = ({ element }: { element: React.ReactElement }) => {
 };
 
 const App = observer(() => {
-  const { t } = useTranslation();
-
   if (authStore.loading) {
     return (
       <div
@@ -28,7 +25,7 @@ const App = observer(() => {
           justifyContent: "center",
         }}
       >
-        <Spin size="large" tip={t("common.loading")} />
+        <Spin size="large" />
       </div>
     );
   }
