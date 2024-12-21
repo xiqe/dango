@@ -143,29 +143,48 @@ const Review = () => {
 
           <div className={styles.reviewArea}>
             {currentReviewWord ? (
-              <Space vertical align="center" spacing="medium">
-                <Title heading={2}>{currentReviewWord.japanese}</Title>
+              <div className={styles.wordCard}>
+                <Title heading={2} className={styles.question}>
+                  {currentReviewWord.japanese}
+                </Title>
                 {showAnswer ? (
                   <>
-                    <Title heading={3}>{currentReviewWord.chinese}</Title>
-                    <Space>
+                    <Title heading={1} className={styles.answer}>
+                      {currentReviewWord.chinese}
+                    </Title>
+                    <div className={styles.cardFoot}>
                       <Button
-                        type="warning"
+                        theme="solid"
+                        size="large"
+                        className={styles.button}
                         onClick={() => handleReview(false)}
                       >
                         {t("review.forgotten")}
                       </Button>
-                      <Button type="primary" onClick={() => handleReview(true)}>
+                      <Button
+                        theme="solid"
+                        size="large"
+                        className={styles.button2}
+                        onClick={() => handleReview(true)}
+                      >
                         {t("review.remembered")}
                       </Button>
-                    </Space>
+                    </div>
                   </>
                 ) : (
-                  <Button type="primary" onClick={() => setShowAnswer(true)}>
-                    {t("review.showAnswer")}
-                  </Button>
+                  <div className={styles.cardFoot}>
+                    <Button
+                      type="primary"
+                      theme="solid"
+                      size="large"
+                      className={styles.button}
+                      onClick={() => setShowAnswer(true)}
+                    >
+                      {t("review.showAnswer")}
+                    </Button>
+                  </div>
                 )}
-              </Space>
+              </div>
             ) : (
               <div className={styles.completedMessage}>
                 <Text type="secondary" size="normal">
