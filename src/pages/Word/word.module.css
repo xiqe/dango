@@ -1,0 +1,54 @@
+.container {
+  padding: 16px;
+}
+
+.card {
+  padding: 20px;
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  line-height: 20px;
+  background-color: var(--bg-color-white);
+  border-radius: var(--radius-common);
+  margin-bottom: 8px;
+}
+.form {
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+}
+
+.submitButton {
+  width: 100%;
+  background-color: var(--primary-color);
+}
+
+.wordList {
+  width: 100%;
+  margin-top: 32px;
+}
+
+.listTitle {
+  margin-bottom: 16px;
+}
+
+.wordCard {
+  width: 100%;
+  background-color: var(--success-color);
+  padding: 12px;
+  border-radius: var(--radius-common);
+}
+
+.wordCardBody {
+  padding: 12px;
+}
+
+.wordCardContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.remove {
+  color: var(--primary-color) !important;
+}

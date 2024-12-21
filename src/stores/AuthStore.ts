@@ -6,7 +6,7 @@ import {
   signOut,
   onAuthChange,
   updatePassword,
-} from "../services/firebase";
+} from "@/services/firebase/auth";
 
 class AuthStore {
   user: User | null = null;
@@ -19,9 +19,7 @@ class AuthStore {
   }
 
   private initAuth() {
-    console.log("Initializing auth state...");
     onAuthChange((user) => {
-      console.log("Auth state changed:", user?.email ?? "No user");
       this.setUser(user);
       this.setLoading(false);
     });

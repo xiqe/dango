@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Card, Typography, Space, Progress } from "@douyinfe/semi-ui";
+import { Button, Typography, Space, Progress } from "@douyinfe/semi-ui";
 import { IWord } from "@/services/types";
 import { getWords, updateWordProgress } from "@/services/firebase/words";
 import authStore from "@/stores/AuthStore";
+import styles from "./Review.module.css";
 
 const { Text, Title } = Typography;
 
@@ -58,7 +59,6 @@ const Review = () => {
           return word;
         });
 
-        // 更新 Firestore 数据
         try {
           if (!authStore.user?.uid) return;
           await updateWordProgress(authStore.user?.uid, currentReviewWord.id, {
@@ -116,26 +116,19 @@ const Review = () => {
   ).length;
 
   return (
-    <div className="container safe-area-inset-bottom">
-      <Card className="mt-lg">
+    <div className={styles.container}>
+      <div className={styles.card}>
         <Space
           vertical
           align="center"
           spacing="medium"
           style={{ width: "100%" }}
         >
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <div className={styles.header}>
             <Text>{t("review.todayReview", { count: todayWords })}</Text>
           </div>
 
-          <div style={{ width: "100%", textAlign: "center" }}>
+          <div className={styles.content}>
             <Progress
               percent={progress.correctRate}
               showInfo
@@ -148,9 +141,7 @@ const Review = () => {
             </Text>
           </div>
 
-          <div
-            style={{ width: "100%", textAlign: "center", minHeight: "200px" }}
-          >
+          <div className={styles.reviewArea}>
             {currentReviewWord ? (
               <Space vertical align="center" spacing="medium">
                 <Title heading={2}>{currentReviewWord.japanese}</Title>
@@ -176,7 +167,7 @@ const Review = () => {
                 )}
               </Space>
             ) : (
-              <div style={{ marginTop: "40px" }}>
+              <div className={styles.completedMessage}>
                 <Text type="secondary" size="normal">
                   {t("review.completed")}
                 </Text>
@@ -184,7 +175,7 @@ const Review = () => {
             )}
           </div>
         </Space>
-      </Card>
+      </div>
     </div>
   );
 };

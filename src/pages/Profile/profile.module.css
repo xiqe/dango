@@ -1,12 +1,14 @@
 .container {
-  padding: var(--space-md);
+  padding: 16px;
 }
 
-.userInfo {
-  background: var(--bg-color);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-xl);
+.card {
+  padding: 20px;
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  line-height: 20px;
+  background-color: var(--bg-color-white);
+  border-radius: var(--radius-common);
 }
 
 .email {
@@ -23,6 +25,7 @@
 
 .actionButton {
   width: 100%;
+  background-color: var(--primary-color);
 }
 
 .version {
@@ -30,11 +33,4 @@
   color: var(--text-color-light);
   margin-top: var(--space-xl);
   font-size: var(--font-size-sm);
-}
-
-.modalFooter {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-sm);
-  margin-top: var(--space-lg);
 }

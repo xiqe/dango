@@ -1,7 +1,22 @@
 /* Semi UI 变量覆盖 */
 :root {
+  /* 自定义变量 */
+  --primary-color: #144617;
+  --success-color: #b1eb70;
+  --warning-color: #faad14;
+  --error-color: #ff4d4f;
+  --text-color: #333333;
+  --text-color-secondary: #666666;
+  --text-color-light: #999999;
+  --border-color: #eeeeee;
+  --bg-color: #ffffff;
+  --bg-primary: var(--primary-color);
+  --bg-primary-hover: var(--success-color);
+  --bg-color-gray: #fdfdfd;
+  --bg-color-green: #f4fde8;
+
   /* 覆盖 Semi UI 的变量 */
-  --semi-color-primary: var(--primary-color);
+  --semi-color-primary: var(--success-color);
   --semi-color-secondary: var(--text-color-secondary);
   --semi-color-tertiary: var(--text-color-light);
   --semi-color-warning: var(--warning-color);
@@ -10,18 +25,6 @@
 
   --semi-font-family: var(--font-family);
   --semi-border-radius: var(--radius-md);
-
-  /* 自定义变量 */
-  --primary-color: #1677ff;
-  --success-color: #52c41a;
-  --warning-color: #faad14;
-  --error-color: #ff4d4f;
-  --text-color: #333333;
-  --text-color-secondary: #666666;
-  --text-color-light: #999999;
-  --border-color: #eeeeee;
-  --bg-color: #ffffff;
-  --bg-color-gray: #f5f5f5;
 
   /* 字体变量 */
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
@@ -32,6 +35,11 @@
   --font-size-lg: 18px;
   --font-size-xl: 20px;
 
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+
   /* 间距变量 */
   --space-xs: 4px;
   --space-sm: 8px;
@@ -39,10 +47,7 @@
   --space-lg: 16px;
   --space-xl: 24px;
 
-  /* 圆角变量 */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
+  --radius-common: 16px;
 }
 
 /* 基础重置 */
@@ -71,25 +76,6 @@ body {
   font-size: var(--font-size-md);
 }
 
-/* Semi UI 组件样式覆盖 */
-.semi-button {
-  font-size: var(--font-size-md) !important;
-  border-radius: var(--radius-md) !important;
-}
-
-.semi-card {
-  border-radius: var(--radius-lg) !important;
-}
-
-.semi-input {
-  font-size: var(--font-size-md) !important;
-  border-radius: var(--radius-md) !important;
-}
-
-.semi-typography {
-  font-family: var(--font-family) !important;
-}
-
 /* 布局容器 */
 .container {
   width: 100%;
@@ -108,26 +94,6 @@ body {
   min-height: calc(100vh - 60px);
 }
 
-/* 底部导航栏样式覆盖 */
-.semi-navigation-horizontal {
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.semi-navigation-horizontal .semi-navigation-item {
-  padding: 12px 0 !important;
-  margin: 0 !important;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.semi-navigation-item-text {
-  margin-top: 4px !important;
-  font-size: var(--font-size-xs) !important;
-}
-
 /* 安全区适配 */
 .safe-area-inset-bottom {
   padding-bottom: constant(safe-area-inset-bottom);
@@ -138,56 +104,4 @@ body {
 .scroll-container {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
-}
-
-/* 间距工具类 */
-.mt-xs {
-  margin-top: var(--space-xs);
-}
-.mt-sm {
-  margin-top: var(--space-sm);
-}
-.mt-md {
-  margin-top: var(--space-md);
-}
-.mt-lg {
-  margin-top: var(--space-lg);
-}
-.mt-xl {
-  margin-top: var(--space-xl);
-}
-
-.mb-xs {
-  margin-bottom: var(--space-xs);
-}
-.mb-sm {
-  margin-bottom: var(--space-sm);
-}
-.mb-md {
-  margin-bottom: var(--space-md);
-}
-.mb-lg {
-  margin-bottom: var(--space-lg);
-}
-.mb-xl {
-  margin-bottom: var(--space-xl);
-}
-
-/* 深色模式 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-color: #ffffff;
-    --text-color-secondary: #cccccc;
-    --text-color-light: #999999;
-    --border-color: #333333;
-    --bg-color: #000000;
-    --bg-color-gray: #1a1a1a;
-
-    /* Semi UI 深色模式变量覆盖 */
-    --semi-color-bg-0: var(--bg-color);
-    --semi-color-bg-1: var(--bg-color-gray);
-    --semi-color-text-0: var(--text-color);
-    --semi-color-text-1: var(--text-color-secondary);
-    --semi-color-text-2: var(--text-color-light);
-  }
 }

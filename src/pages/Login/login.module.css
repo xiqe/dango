@@ -3,34 +3,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-md);
-  background-color: var(--bg-color-gray);
+  background-color: var(--bg-primary-hover);
 }
 
 .card {
-  width: 100%;
-  max-width: 400px;
+  width: 80vw;
 }
 
 .title {
   text-align: center;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semi-bold);
   margin-bottom: var(--space-xl);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
 .input {
-  width: 100%;
+  border-radius: var(--radius-common);
+  background-color: var(--bg-color);
 }
 
 .button {
   margin-top: var(--space-md);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-common);
 }
 
 .switchButton {
-  margin-top: var(--space-sm);
+  border-radius: var(--radius-common);
 }

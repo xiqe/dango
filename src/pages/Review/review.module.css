@@ -1,0 +1,34 @@
+.container {
+  padding: 16px;
+}
+
+.card {
+  padding: 20px;
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  line-height: 20px;
+  background-color: var(--bg-color-white);
+  border-radius: var(--radius-common);
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content {
+  width: 100%;
+  text-align: center;
+}
+
+.reviewArea {
+  width: 100%;
+  text-align: center;
+  min-height: 200px;
+}
+
+.completedMessage {
+  margin-top: 40px;
+}

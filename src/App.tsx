@@ -1,5 +1,3 @@
-import "@douyinfe/semi-ui/dist/css/semi.min.css";
-import "@/styles/root.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { Spin } from "@douyinfe/semi-ui";
@@ -8,7 +6,9 @@ import Layout from "./components/Layout";
 import Review from "./pages/Review";
 import Word from "./pages/Word";
 import Profile from "./pages/Profile";
+import ChangePassword from "./pages/ChangePassword";
 import Login from "./pages/Login";
+import "@/styles/root.css";
 
 const PrivateRoute = ({ element }: { element: React.ReactElement }) => {
   return authStore.user ? element : <Navigate to="/login" replace />;
@@ -47,6 +47,10 @@ const App = observer(() => {
         <Route
           path="/profile"
           element={<PrivateRoute element={<Profile />} />}
+        />
+        <Route
+          path="/change-password"
+          element={<PrivateRoute element={<ChangePassword />} />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

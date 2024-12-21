@@ -1,11 +1,9 @@
 import React, { useState, useCallback } from "react";
-import { Card, Input, Button, Toast, Typography } from "@douyinfe/semi-ui";
+import { Input, Button, Toast } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 import authStore from "../../stores/AuthStore";
 import styles from "./login.module.css";
-
-const { Title } = Typography;
 
 const Login = observer(() => {
   const { t } = useTranslation();
@@ -53,16 +51,17 @@ const Login = observer(() => {
 
   return (
     <div className={styles.container}>
-      <Card className={styles.card}>
-        <Title heading={3} className={styles.title}>
+      <div className={styles.card}>
+        <div className={styles.title}>
           {isLogin ? t("login.title.login") : t("login.title.register")}
-        </Title>
+        </div>
         <form onSubmit={handleSubmit} className={styles.form}>
           <Input
             type="email"
             placeholder={t("login.placeholder.email")}
             value={email}
             onChange={setEmail}
+            size="large"
             className={styles.input}
           />
           <Input
@@ -70,12 +69,14 @@ const Login = observer(() => {
             placeholder={t("login.placeholder.password")}
             value={password}
             onChange={setPassword}
+            size="large"
             className={styles.input}
           />
           <Button
             type="primary"
             htmlType="submit"
-            block
+            theme="solid"
+            size="large"
             className={styles.button}
           >
             {isLogin ? t("login.button.login") : t("login.button.register")}
@@ -83,6 +84,7 @@ const Login = observer(() => {
           <Button
             type="tertiary"
             block
+            size="large"
             onClick={toggleLoginRegister}
             className={styles.switchButton}
           >
@@ -91,7 +93,7 @@ const Login = observer(() => {
               : t("login.button.switchToLogin")}
           </Button>
         </form>
-      </Card>
+      </div>
     </div>
   );
 });
