@@ -1,0 +1,2 @@
+# dango
+Word memorization tool
