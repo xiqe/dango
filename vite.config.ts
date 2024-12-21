@@ -4,6 +4,10 @@ import * as path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/dango/",
+  build: {
+    outDir: "dist",
+  },
   plugins: [react()],
   resolve: {
     alias: {
