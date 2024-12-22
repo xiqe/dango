@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { Button, Form, Space, Typography } from "@douyinfe/semi-ui";
+import { Button, Form, Typography } from "@douyinfe/semi-ui";
 import { useTranslation } from "react-i18next";
 import { getWord, updateWord, deleteWord } from "@/services/firebase/words";
 import { IWord } from "@/services/types";
