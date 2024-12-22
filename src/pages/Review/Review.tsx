@@ -20,6 +20,7 @@ const Review = () => {
   const [words, setWords] = useState<IWord[]>([]);
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentReview, setCurrentReview] = useState<ReviewState | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getRandomReviewState = (word: IWord): ReviewState => {
     return {
@@ -51,6 +52,7 @@ const Review = () => {
   const handleReview = useCallback(
     async (remembered: boolean) => {
       if (currentReview) {
+        setIsLoading(true);
         const updatedWords = words.map((word) => {
           if (word.id === currentReview.word.id) {
             const newStage = remembered
@@ -99,19 +101,20 @@ const Review = () => {
                 60 *
                 1000,
           });
+
+          setWords(updatedWords);
+          const remainingWords = updatedWords.filter(
+            (word) => word.nextReviewDate <= Date.now()
+          );
+          setCurrentReview(
+            remainingWords[0] ? getRandomReviewState(remainingWords[0]) : null
+          );
+          setShowAnswer(false);
         } catch (error) {
           console.error("Error updating word progress in Firestore:", error);
+        } finally {
+          setIsLoading(false);
         }
-
-        setWords(updatedWords);
-
-        const remainingWords = updatedWords.filter(
-          (word) => word.nextReviewDate <= Date.now()
-        );
-        setCurrentReview(
-          remainingWords[0] ? getRandomReviewState(remainingWords[0]) : null
-        );
-        setShowAnswer(false);
       }
     },
     [currentReview, words]
@@ -180,6 +183,7 @@ const Review = () => {
                         size="large"
                         className={styles.button}
                         onClick={() => handleReview(false)}
+                        loading={isLoading}
                       >
                         {t("review.forgotten")}
                       </Button>
@@ -188,6 +192,7 @@ const Review = () => {
                         size="large"
                         className={styles.button2}
                         onClick={() => handleReview(true)}
+                        loading={isLoading}
                       >
                         {t("review.remembered")}
                       </Button>
