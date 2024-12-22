@@ -1,6 +1,13 @@
 import React, { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Input, Space, Typography } from "@douyinfe/semi-ui";
+import {
+  Button,
+  Input,
+  Space,
+  Typography,
+  TextArea,
+  Toast,
+} from "@douyinfe/semi-ui";
 import { IWord } from "@/services/types";
 import { addWord } from "@/services/firebase/words";
 import { observer } from "mobx-react-lite";
@@ -13,7 +20,9 @@ const Add = observer(() => {
   const { t } = useTranslation();
   const [japanese, setJapanese] = useState("");
   const [chinese, setChinese] = useState("");
+  const [jsonInput, setJsonInput] = useState("");
   const [addingWord, setAddingWord] = useState(false);
+  const [addingBatch, setAddingBatch] = useState(false);
 
   const handleAddWord = useCallback(
     async (e: React.FormEvent) => {
@@ -41,14 +50,71 @@ const Add = observer(() => {
         await addWord(authStore.user.uid, newWord);
         setJapanese("");
         setChinese("");
+        Toast.success(t("addWord.addSuccess"));
       } catch (error) {
         console.error("Error adding word:", error);
+        Toast.error(t("addWord.addError"));
       } finally {
         setAddingWord(false);
       }
     },
-    [japanese, chinese, authStore.user?.uid, addingWord]
+    [japanese, chinese, authStore.user?.uid, addingWord, t]
   );
+
+  const handleBatchUpload = useCallback(async () => {
+    if (!authStore.user?.uid || !jsonInput.trim() || addingBatch) return;
+
+    setAddingBatch(true);
+    try {
+      const words = JSON.parse(jsonInput);
+
+      if (!Array.isArray(words)) {
+        Toast.error(t("common.invalidJSON"));
+        return;
+      }
+
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const word of words) {
+        if (!word.japanese || !word.chinese) {
+          errorCount++;
+          continue;
+        }
+
+        const newWord: Omit<IWord, "id"> = {
+          japanese: word.japanese.trim(),
+          chinese: word.chinese.trim(),
+          createdAt: Date.now(),
+          nextReviewDate: Date.now(),
+          reviewCount: 0,
+          correctCount: 0,
+          stage: 0,
+        };
+
+        try {
+          await addWord(authStore.user.uid, newWord);
+          successCount++;
+        } catch (error) {
+          console.error("Error adding word:", error);
+          errorCount++;
+        }
+      }
+
+      setJsonInput("");
+      Toast.success(
+        t("addWord.batchUploadResult", {
+          success: successCount,
+          error: errorCount,
+        })
+      );
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      Toast.error(t("addWord.invalidJSON"));
+    } finally {
+      setAddingBatch(false);
+    }
+  }, [jsonInput, authStore.user?.uid, addingBatch, t]);
 
   if (!authStore.user) {
     return (
@@ -108,8 +174,41 @@ const Add = observer(() => {
             </Space>
           </form>
         </Space>
+
+        <h2 className={styles.title} style={{ marginTop: "48px" }}>
+          {t("addWord.batchUploadTitle")}
+        </h2>
+        <Space
+          vertical
+          align="start"
+          spacing="medium"
+          style={{ width: "100%" }}
+        >
+          <TextArea
+            value={jsonInput}
+            onChange={(value) => setJsonInput(value)}
+            placeholder={`[
+  {"japanese": "言葉1", "chinese": "词语1"},
+  {"japanese": "言葉2", "chinese": "词语2"}
+]`}
+            className={styles.jsonInput}
+            rows={6}
+            disabled={addingBatch}
+          />
+          <Button
+            type="primary"
+            theme="solid"
+            size="large"
+            className={styles.submitButton}
+            loading={addingBatch}
+            onClick={handleBatchUpload}
+          >
+            {t("addWord.batchUploadButton")}
+          </Button>
+        </Space>
       </div>
     </div>
   );
 });
+
 export default Add;

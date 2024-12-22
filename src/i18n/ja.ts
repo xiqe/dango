@@ -9,6 +9,7 @@ export default {
     addButton: "追加",
     deleteButton: "削除",
     loading: "ローディング中...",
+    pleaseLogin: "ログインしてください",
   },
   nav: {
     task: "タスク",
@@ -34,6 +35,13 @@ export default {
       title: "削除の確認",
       content: "この単語を削除してもよろしいですか？",
     },
+    batchUploadTitle: "一括アップロード（JSON形式）",
+    batchUploadButton: "一括アップロード",
+    invalidJSON: "無効なJSON形式です",
+    batchUploadResult:
+      "アップロード完了：成功 {{success}} 件、失敗 {{error}} 件",
+    addSuccess: "追加しました",
+    addError: "追加に失敗しました",
   },
   profile: {
     title: "プロフィール",
