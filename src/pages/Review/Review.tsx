@@ -10,13 +10,23 @@ const { Text, Title } = Typography;
 
 const REVIEW_INTERVALS = [1, 2, 4, 7, 15, 30, 60];
 
+interface ReviewState {
+  word: IWord;
+  isJapaneseQuestion: boolean;
+}
+
 const Review = () => {
   const { t } = useTranslation();
   const [words, setWords] = useState<IWord[]>([]);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [currentReviewWord, setCurrentReviewWord] = useState<IWord | null>(
-    null
-  );
+  const [currentReview, setCurrentReview] = useState<ReviewState | null>(null);
+
+  const getRandomReviewState = (word: IWord): ReviewState => {
+    return {
+      word,
+      isJapaneseQuestion: Math.random() < 0.5,
+    };
+  };
 
   const loadWords = useCallback(async () => {
     if (!authStore.user?.uid) return;
@@ -26,7 +36,9 @@ const Review = () => {
       const reviewWords = fetchedWords.filter(
         (word: IWord) => word.nextReviewDate <= Date.now()
       );
-      setCurrentReviewWord(reviewWords[0] || null);
+      setCurrentReview(
+        reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
+      );
     } catch (error) {
       console.error("Error loading words from Firestore:", error);
     }
@@ -38,9 +50,9 @@ const Review = () => {
 
   const handleReview = useCallback(
     async (remembered: boolean) => {
-      if (currentReviewWord) {
+      if (currentReview) {
         const updatedWords = words.map((word) => {
-          if (word.id === currentReviewWord.id) {
+          if (word.id === currentReview.word.id) {
             const newStage = remembered
               ? Math.min(word.stage + 1, REVIEW_INTERVALS.length - 1)
               : Math.max(0, word.stage - 1);
@@ -61,24 +73,26 @@ const Review = () => {
 
         try {
           if (!authStore.user?.uid) return;
-          await updateWordProgress(authStore.user?.uid, currentReviewWord.id, {
-            reviewCount: currentReviewWord.reviewCount + 1,
+          await updateWordProgress(authStore.user?.uid, currentReview.word.id, {
+            reviewCount: currentReview.word.reviewCount + 1,
             correctCount: remembered
-              ? currentReviewWord.correctCount + 1
-              : currentReviewWord.correctCount,
+              ? currentReview.word.correctCount + 1
+              : currentReview.word.correctCount,
             stage: remembered
               ? Math.min(
-                  currentReviewWord.stage + 1,
+                  currentReview.word.stage + 1,
                   REVIEW_INTERVALS.length - 1
                 )
-              : Math.max(0, currentReviewWord.stage - 1),
+              : Math.max(0, currentReview.word.stage - 1),
             nextReviewDate:
               Date.now() +
               REVIEW_INTERVALS[
-                Math.min(
-                  currentReviewWord.stage + 1,
-                  REVIEW_INTERVALS.length - 1
-                )
+                remembered
+                  ? Math.min(
+                      currentReview.word.stage + 1,
+                      REVIEW_INTERVALS.length - 1
+                    )
+                  : Math.max(0, currentReview.word.stage - 1)
               ] *
                 24 *
                 60 *
@@ -94,11 +108,13 @@ const Review = () => {
         const remainingWords = updatedWords.filter(
           (word) => word.nextReviewDate <= Date.now()
         );
-        setCurrentReviewWord(remainingWords[0] || null);
+        setCurrentReview(
+          remainingWords[0] ? getRandomReviewState(remainingWords[0]) : null
+        );
         setShowAnswer(false);
       }
     },
-    [currentReviewWord, words]
+    [currentReview, words]
   );
 
   const getProgress = useCallback(() => {
@@ -144,15 +160,19 @@ const Review = () => {
           </div>
 
           <div className={styles.reviewArea}>
-            {currentReviewWord ? (
+            {currentReview ? (
               <div className={styles.wordCard}>
-                <Title heading={2} className={styles.question}>
-                  {currentReviewWord.japanese}
+                <Title heading={4} className={styles.question}>
+                  {currentReview.isJapaneseQuestion
+                    ? currentReview.word.japanese
+                    : currentReview.word.chinese}
                 </Title>
                 {showAnswer ? (
                   <>
-                    <Title heading={1} className={styles.answer}>
-                      {currentReviewWord.chinese}
+                    <Title heading={4} className={styles.answer}>
+                      {currentReview.isJapaneseQuestion
+                        ? currentReview.word.chinese
+                        : currentReview.word.japanese}
                     </Title>
                     <div className={styles.cardFoot}>
                       <Button
