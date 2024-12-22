@@ -89,6 +89,8 @@ const Review = () => {
           console.error("Error updating word progress in Firestore:", error);
         }
 
+        setWords(updatedWords);
+
         const remainingWords = updatedWords.filter(
           (word) => word.nextReviewDate <= Date.now()
         );

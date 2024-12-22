@@ -105,3 +105,7 @@ body {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
 }
+
+.semi-button {
+  border-radius: var(--radius-common);
+}

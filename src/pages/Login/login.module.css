@@ -37,9 +37,4 @@
 .button {
   margin-top: var(--space-md);
   background-color: var(--bg-primary);
-  border-radius: var(--radius-common);
-}
-
-.switchButton {
-  border-radius: var(--radius-common);
 }

@@ -43,6 +43,7 @@ const ChangePassword = observer(() => {
           <Form.Input
             field="newPassword"
             label={t("profile.newPassword")}
+            size="large"
             type="password"
             rules={[
               { required: true, message: t("profile.passwordRequired") },
@@ -52,16 +53,28 @@ const ChangePassword = observer(() => {
           <Form.Input
             field="confirmPassword"
             label={t("profile.confirmPassword")}
+            size="large"
             type="password"
             rules={[
               { required: true, message: t("profile.confirmPasswordRequired") },
             ]}
           />
           <div className={styles.actionButtons}>
-            <Button type="tertiary" onClick={() => navigate("/profile")}>
+            <Button
+              theme="solid"
+              size="large"
+              className={styles.button}
+              onClick={() => navigate("/profile")}
+            >
               {t("common.cancel")}
             </Button>
-            <Button htmlType="submit" type="primary" loading={loading}>
+            <Button
+              htmlType="submit"
+              theme="solid"
+              size="large"
+              className={styles.button2}
+              loading={loading}
+            >
               {t("common.confirm")}
             </Button>
           </div>

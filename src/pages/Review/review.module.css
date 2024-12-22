@@ -62,7 +62,6 @@
     .button,
     .button2 {
       width: 100%;
-      border-radius: var(--radius-common);
       background-color: var(--primary-color);
     }
     .button2 {

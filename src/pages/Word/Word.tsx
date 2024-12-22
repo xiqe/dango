@@ -15,6 +15,10 @@ const Word = observer(() => {
   const [japanese, setJapanese] = useState("");
   const [chinese, setChinese] = useState("");
   const [loading, setLoading] = useState(true);
+  const [addingWord, setAddingWord] = useState(false);
+  const [deletingWordIds, setDeletingWordIds] = useState<Set<string>>(
+    new Set()
+  );
 
   const loadWords = useCallback(async () => {
     if (!authStore.user?.uid) return;
@@ -35,8 +39,15 @@ const Word = observer(() => {
   const handleAddWord = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!authStore.user?.uid || !japanese.trim() || !chinese.trim()) return;
+      if (
+        !authStore.user?.uid ||
+        !japanese.trim() ||
+        !chinese.trim() ||
+        addingWord
+      )
+        return;
 
+      setAddingWord(true);
       try {
         const newWord: Omit<IWord, "id"> = {
           japanese: japanese.trim(),
@@ -54,22 +65,32 @@ const Word = observer(() => {
         setChinese("");
       } catch (error) {
         console.error("Error adding word:", error);
+      } finally {
+        setAddingWord(false);
       }
     },
-    [japanese, chinese, authStore.user?.uid, loadWords]
+    [japanese, chinese, authStore.user?.uid, loadWords, addingWord]
   );
 
   const handleDelete = useCallback(
     async (wordId: string) => {
-      if (!authStore.user?.uid) return;
+      if (!authStore.user?.uid || deletingWordIds.has(wordId)) return;
+
+      setDeletingWordIds((prev) => new Set([...prev, wordId]));
       try {
         await deleteWord(authStore.user.uid, wordId);
         await loadWords();
       } catch (error) {
         console.error("Error deleting word:", error);
+      } finally {
+        setDeletingWordIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(wordId);
+          return newSet;
+        });
       }
     },
-    [authStore.user?.uid, loadWords]
+    [authStore.user?.uid, loadWords, deletingWordIds]
   );
 
   if (!authStore.user) {
@@ -105,6 +126,7 @@ const Word = observer(() => {
                 className={styles.input}
                 size="large"
                 showClear
+                disabled={addingWord}
               />
               <Input
                 value={chinese}
@@ -113,6 +135,7 @@ const Word = observer(() => {
                 className={styles.input}
                 size="large"
                 showClear
+                disabled={addingWord}
               />
               <Button
                 type="primary"
@@ -120,6 +143,7 @@ const Word = observer(() => {
                 theme="solid"
                 size="large"
                 className={styles.submitButton}
+                loading={addingWord}
               >
                 {t("common.addButton")}
               </Button>
@@ -156,6 +180,7 @@ const Word = observer(() => {
                       theme="borderless"
                       className={styles.remove}
                       onClick={() => handleDelete(word.id)}
+                      loading={deletingWordIds.has(word.id)}
                     >
                       {t("common.deleteButton")}
                     </Button>
