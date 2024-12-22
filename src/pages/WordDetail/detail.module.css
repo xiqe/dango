@@ -1,0 +1,19 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 8px;
+  .button,
+  .button2 {
+    width: 100%;
+    background-color: var(--primary-color);
+  }
+  .button2 {
+    background-color: var(--success-color);
+  }
+}

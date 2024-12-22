@@ -10,6 +10,10 @@ export default {
     deleteButton: "削除",
     loading: "ローディング中...",
     pleaseLogin: "ログインしてください",
+    search: "検索...",
+    details: "詳細",
+    save: "保存",
+    notFound: "単語が見つかりません",
   },
   nav: {
     task: "タスク",
@@ -42,6 +46,7 @@ export default {
       "アップロード完了：成功 {{success}} 件、失敗 {{error}} 件",
     addSuccess: "追加しました",
     addError: "追加に失敗しました",
+    noSearchResults: "一致する単語が見つかりません",
   },
   profile: {
     title: "プロフィール",

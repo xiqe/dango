@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   addDoc,
   deleteDoc,
@@ -83,4 +84,30 @@ export const getWordsForReview = async (userId: string): Promise<IWord[]> => {
     console.error("Error fetching words for review:", error);
     throw error;
   }
+};
+export const getWord = async (
+  userId: string,
+  wordId: string
+): Promise<IWord> => {
+  try {
+    const docRef = doc(db, `users/${userId}/words/${wordId}`);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      throw new Error("Word not found");
+    }
+    return { id: docSnap.id, ...docSnap.data() } as IWord;
+  } catch (error) {
+    console.error("Error fetching word:", error);
+    throw error;
+  }
+};
+
+export const updateWord = async (
+  userId: string,
+  wordId: string,
+  wordData: IWord
+): Promise<void> => {
+  const { id, ...data } = wordData;
+  const docRef = doc(db, "users", userId, "words", wordId);
+  await updateDoc(docRef, data);
 };
