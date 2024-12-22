@@ -11,25 +11,13 @@
   border-radius: var(--radius-common);
   margin-bottom: 8px;
 }
-.form {
-  width: 100%;
-}
-
-.input {
-  width: 100%;
-}
-
-.submitButton {
-  width: 100%;
-  background-color: var(--primary-color);
-}
 
 .wordList {
   width: 100%;
   margin-top: 32px;
 }
 
-.listTitle {
+.title {
   margin-bottom: 16px;
 }
 

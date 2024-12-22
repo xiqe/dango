@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Word, Test, Setting } from "@/assets/index";
+import { Add, Word, Test, Setting } from "@/assets/index";
 import styles from "./layout.module.css";
 
 interface LayoutProps {
@@ -15,6 +15,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const menus = [
     { key: "/", text: t("nav.task"), icon: <Test className={styles.icon} /> },
+    {
+      key: "/add",
+      text: t("nav.add"),
+      icon: <Add className={styles.icon} />,
+    },
     {
       key: "/word",
       text: t("nav.wordlist"),
@@ -40,6 +45,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             onClick={() => navigate(menu.key)}
           >
             {menu.icon}
+            <div className={styles.title}>{menu.text}</div>
           </div>
         ))}
       </nav>

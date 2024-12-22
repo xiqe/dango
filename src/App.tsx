@@ -4,6 +4,7 @@ import { Spin } from "@douyinfe/semi-ui";
 import authStore from "./stores/AuthStore";
 import Layout from "./components/Layout";
 import Review from "./pages/Review";
+import Add from "./pages/Add";
 import Word from "./pages/Word";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
@@ -43,6 +44,7 @@ const App = observer(() => {
     <Layout>
       <Routes>
         <Route path="/" element={<PrivateRoute element={<Review />} />} />
+        <Route path="/add" element={<PrivateRoute element={<Add />} />} />
         <Route path="/word" element={<PrivateRoute element={<Word />} />} />
         <Route
           path="/profile"

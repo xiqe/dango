@@ -12,6 +12,7 @@ export default {
   },
   nav: {
     task: "タスク",
+    add: "単語追加",
     wordlist: "単語帳",
     profile: "プロフィール",
   },
