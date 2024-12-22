@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Add, Word, Test, Setting } from "@/assets/index";
+import { Word, Test, Setting } from "@/assets/index";
 import styles from "./layout.module.css";
 
 interface LayoutProps {
