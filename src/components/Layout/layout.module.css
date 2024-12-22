@@ -38,3 +38,8 @@
   color: var(--primary-color);
   font-weight: 500;
 }
+
+.icon {
+  width: 24px;
+  height: 24px;
+}
