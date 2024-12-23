@@ -32,6 +32,20 @@ const Review = observer(() => {
   };
 
   useEffect(() => {
+    const updateVH = () => {
+      document.documentElement.style.setProperty(
+        "--vh",
+        `${window.innerHeight * 0.01}px`
+      );
+    };
+
+    window.addEventListener("resize", updateVH);
+    updateVH();
+
+    return () => window.removeEventListener("resize", updateVH);
+  }, []);
+
+  useEffect(() => {
     const reviewWords = wordStore.words.filter(
       (word) => word.nextReviewDate <= Date.now()
     );

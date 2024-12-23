@@ -48,6 +48,8 @@
   --space-xl: 24px;
 
   --radius-common: 16px;
+
+  --vh: 1vh;
 }
 
 /* 基础重置 */
