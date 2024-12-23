@@ -53,14 +53,25 @@
 
 .wordCard {
   width: 100%;
-  height: 50vh;
+  height: calc(100vh - 60px - 32px - 4px - 130px);
   background-color: var(--bg-color-green);
   border: 1px solid var(--success-color);
-  padding: 48px 0 0;
+  padding: 20px;
   border-radius: var(--radius-common);
   position: relative;
+  .statistics {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-color);
+    span {
+      font-size: 18px;
+      font-weight: var(--font-weight-medium);
+    }
+  }
   .question {
-    margin-bottom: 36px;
+    margin: 36px 0;
+    color: var(--primary-color);
   }
   .answer {
     margin: 0 auto;
@@ -71,9 +82,8 @@
   }
   .cardFoot {
     position: absolute;
-    width: 100%;
+    width: calc(100% - 40px);
     display: flex;
-    padding: 0 20px;
     bottom: 24px;
     gap: 16px;
     .button,

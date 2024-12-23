@@ -34,6 +34,8 @@ export default {
     remembered: "覚えた",
     forgotten: "忘れた",
     completed: "今日の復習は終わりました！",
+    accuracy: "正解率",
+    memoryLevel: "レベル",
   },
   addWord: {
     listTitle: "単語リスト",

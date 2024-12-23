@@ -139,11 +139,32 @@ const Review = observer(() => {
         <div className={styles.reviewArea}>
           {currentReview ? (
             <div className={styles.wordCard}>
+              <div className={styles.statistics}>
+                <div>
+                  {t("review.accuracy")}：
+                  <span>
+                    {currentReview.word.reviewCount === 0
+                      ? "0"
+                      : (
+                          (currentReview.word.correctCount /
+                            currentReview.word.reviewCount) *
+                          100
+                        ).toFixed(1)}
+                    %
+                  </span>
+                </div>
+                <div>
+                  {t("review.memoryLevel")}：
+                  <span>{currentReview?.word.correctCount}</span>
+                </div>
+              </div>
+
               <Title heading={4} className={styles.question}>
                 {currentReview.isJapaneseQuestion
                   ? currentReview.word.japanese
                   : currentReview.word.chinese}
               </Title>
+
               {showAnswer ? (
                 <>
                   <Title heading={4} className={styles.answer}>
