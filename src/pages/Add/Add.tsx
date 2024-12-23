@@ -12,6 +12,7 @@ import { IWord } from "@/services/types";
 import { addWord } from "@/services/firebase/words";
 import { observer } from "mobx-react-lite";
 import authStore from "@/stores/AuthStore";
+import wordStore from "@/stores/WordStore";
 import styles from "./add.module.css";
 
 const { Text } = Typography;
@@ -48,6 +49,8 @@ const Add = observer(() => {
         };
 
         await addWord(authStore.user.uid, newWord);
+        await wordStore.loadWords();
+
         setJapanese("");
         setChinese("");
         Toast.success(t("addWord.addSuccess"));
@@ -100,6 +103,8 @@ const Add = observer(() => {
           errorCount++;
         }
       }
+
+      await wordStore.loadWords();
 
       setJsonInput("");
       Toast.success(

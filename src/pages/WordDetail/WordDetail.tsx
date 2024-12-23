@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { getWord, updateWord, deleteWord } from "@/services/firebase/words";
 import { IWord } from "@/services/types";
 import authStore from "@/stores/AuthStore";
+import wordStore from "@/stores/WordStore";
 import styles from "./detail.module.css";
 
 const { Text } = Typography;
@@ -48,6 +49,7 @@ const WordDetail = observer(() => {
         japanese: values.japanese,
         chinese: values.chinese,
       });
+      await wordStore.loadWords();
       navigate("/word");
     } catch (error) {
       console.error("Error updating word:", error);
@@ -62,6 +64,7 @@ const WordDetail = observer(() => {
     setDeleting(true);
     try {
       await deleteWord(authStore.user.uid, id);
+      await wordStore.loadWords();
       navigate("/word");
     } catch (error) {
       console.error("Error deleting word:", error);
