@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import cls from "clsx";
 import { Button, Typography } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
@@ -119,18 +120,19 @@ const Review = observer(() => {
         <div className={styles.header}>
           <div className={styles.box}>
             <div className={styles.boxTitle}>{t("review.todayReview")}</div>
-            {todayWords}
+            <div className={cls(styles.num, styles.today)}>{todayWords}</div>
           </div>
           <div className={styles.box}>
-            {t("review.correctRate")}
-            {progress.correctRate.toFixed(1)}
-            <br />
-            {t("review.totalReviews")}
-            {progress.totalReviews}
+            <div className={styles.boxTitle}>{t("review.correctRate")}</div>
+            <div className={styles.percent}>
+              {progress.correctRate.toFixed(1)}%
+            </div>
+            <div className={styles.boxTitle}>{t("review.totalReviews")}</div>
+            <div className={styles.percent}>{progress.totalReviews}</div>
           </div>
           <div className={styles.box}>
             <div className={styles.boxTitle}>{t("review.totalWords")}</div>
-            {wordStore.words.length}
+            <div className={styles.num}>{wordStore.words.length}</div>
           </div>
         </div>
 

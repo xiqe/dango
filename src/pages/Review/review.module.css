@@ -10,7 +10,33 @@
     background-color: var(--bg-color-green);
     border: 1px solid var(--success-color);
     border-radius: var(--radius-common);
-    min-height: 120px;
+    min-height: 130px;
+    position: relative;
+    .boxTitle {
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-color);
+    }
+    .num {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      font-size: 40px;
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-color);
+    }
+    .percent {
+      font-size: 18px;
+      font-weight: var(--font-weight-bold);
+      text-align: right;
+      color: var(--primary-color);
+      padding: 8px 0;
+      &:last-child {
+        padding: 8px 0 0;
+      }
+    }
+    .today {
+      color: var(--error-color);
+    }
   }
 }
 

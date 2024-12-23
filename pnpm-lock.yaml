@@ -8,6 +8,9 @@ dependencies:
   '@douyinfe/semi-ui':
     specifier: ^2.72.0
     version: 2.72.0(acorn@8.14.0)(react-dom@18.3.1)(react@18.3.1)
+  clsx:
+    specifier: ^2.0.0
+    version: 2.1.1
   firebase:
     specifier: ^10.7.0
     version: 10.14.1
@@ -2237,6 +2240,11 @@ packages:
 
   /clsx@1.2.1:
     resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
+    engines: {node: '>=6'}
+    dev: false
+
+  /clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
     dev: false
 
