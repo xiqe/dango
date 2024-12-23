@@ -26,9 +26,10 @@ export default {
   },
   review: {
     addButton: "単語を追加",
-    todayReview: "今日の復習: {{count}}単語",
-    correctRate: "正解率: {{rate}}%",
-    totalReviews: "総復習回数: {{count}}",
+    todayReview: "今日の復習",
+    correctRate: "正解率",
+    totalReviews: "総復習回数",
+    totalWords: "単語総数",
     showAnswer: "答えを見る",
     remembered: "覚えた",
     forgotten: "忘れた",

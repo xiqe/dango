@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Typography, Space, Progress } from "@douyinfe/semi-ui";
+import { Button, Typography } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
 import { updateWordProgress } from "@/services/firebase/words";
@@ -114,90 +114,84 @@ const Review = observer(() => {
   const todayWords = wordStore.todayWords;
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <Space
-          vertical
-          align="center"
-          spacing="medium"
-          style={{ width: "100%" }}
-        >
-          <div className={styles.header}>
-            <Text>{t("review.todayReview", { count: todayWords })}</Text>
+    <div className="container">
+      <div className="card">
+        <div className={styles.header}>
+          <div className={styles.box}>
+            <div className={styles.boxTitle}>{t("review.todayReview")}</div>
+            {todayWords}
           </div>
-
-          <div className={styles.content}>
-            <Progress
-              percent={progress.correctRate}
-              showInfo
-              format={(percent) =>
-                t("review.correctRate", { rate: percent.toFixed(1) })
-              }
-            />
-            <Text type="secondary">
-              {t("review.totalReviews", { count: progress.totalReviews })}
-            </Text>
+          <div className={styles.box}>
+            {t("review.correctRate")}
+            {progress.correctRate.toFixed(1)}
+            <br />
+            {t("review.totalReviews")}
+            {progress.totalReviews}
           </div>
+          <div className={styles.box}>
+            <div className={styles.boxTitle}>{t("review.totalWords")}</div>
+            {wordStore.words.length}
+          </div>
+        </div>
 
-          <div className={styles.reviewArea}>
-            {currentReview ? (
-              <div className={styles.wordCard}>
-                <Title heading={4} className={styles.question}>
-                  {currentReview.isJapaneseQuestion
-                    ? currentReview.word.japanese
-                    : currentReview.word.chinese}
-                </Title>
-                {showAnswer ? (
-                  <>
-                    <Title heading={4} className={styles.answer}>
-                      {currentReview.isJapaneseQuestion
-                        ? currentReview.word.chinese
-                        : currentReview.word.japanese}
-                    </Title>
-                    <div className={styles.cardFoot}>
-                      <Button
-                        theme="solid"
-                        size="large"
-                        className={styles.button}
-                        onClick={() => handleReview(false)}
-                        loading={isLoading}
-                      >
-                        {t("review.forgotten")}
-                      </Button>
-                      <Button
-                        theme="solid"
-                        size="large"
-                        className={styles.button2}
-                        onClick={() => handleReview(true)}
-                        loading={isLoading}
-                      >
-                        {t("review.remembered")}
-                      </Button>
-                    </div>
-                  </>
-                ) : (
+        <div className={styles.reviewArea}>
+          {currentReview ? (
+            <div className={styles.wordCard}>
+              <Title heading={4} className={styles.question}>
+                {currentReview.isJapaneseQuestion
+                  ? currentReview.word.japanese
+                  : currentReview.word.chinese}
+              </Title>
+              {showAnswer ? (
+                <>
+                  <Title heading={4} className={styles.answer}>
+                    {currentReview.isJapaneseQuestion
+                      ? currentReview.word.chinese
+                      : currentReview.word.japanese}
+                  </Title>
                   <div className={styles.cardFoot}>
                     <Button
-                      type="primary"
                       theme="solid"
                       size="large"
                       className={styles.button}
-                      onClick={() => setShowAnswer(true)}
+                      onClick={() => handleReview(false)}
+                      loading={isLoading}
                     >
-                      {t("review.showAnswer")}
+                      {t("review.forgotten")}
+                    </Button>
+                    <Button
+                      theme="solid"
+                      size="large"
+                      className={styles.button2}
+                      onClick={() => handleReview(true)}
+                      loading={isLoading}
+                    >
+                      {t("review.remembered")}
                     </Button>
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className={styles.completedMessage}>
-                <Text type="secondary" size="normal">
-                  {t("review.completed")}
-                </Text>
-              </div>
-            )}
-          </div>
-        </Space>
+                </>
+              ) : (
+                <div className={styles.cardFoot}>
+                  <Button
+                    type="primary"
+                    theme="solid"
+                    size="large"
+                    className={styles.button}
+                    onClick={() => setShowAnswer(true)}
+                  >
+                    {t("review.showAnswer")}
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className={styles.completedMessage}>
+              <Text type="secondary" size="normal">
+                {t("review.completed")}
+              </Text>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -119,7 +119,7 @@ const WordDetail = observer(() => {
             rules={[{ required: true }]}
             size="large"
           />
-          <div className={styles.actions}>
+          <div className={styles.actionButtons}>
             <Button
               theme="solid"
               type="primary"
@@ -130,14 +130,7 @@ const WordDetail = observer(() => {
             >
               {t("common.save")}
             </Button>
-            <Button
-              theme="solid"
-              className={styles.button2}
-              onClick={() => navigate("/word")}
-              size="large"
-            >
-              {t("common.cancel")}
-            </Button>
+
             <Button
               theme="solid"
               type="danger"
@@ -146,6 +139,15 @@ const WordDetail = observer(() => {
               size="large"
             >
               {t("common.deleteButton")}
+            </Button>
+
+            <Button
+              theme="solid"
+              type="tertiary"
+              size="large"
+              onClick={() => navigate("/word")}
+            >
+              {t("common.cancel")}
             </Button>
           </div>
         </Form>

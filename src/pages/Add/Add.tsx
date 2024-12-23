@@ -127,8 +127,8 @@ const Add = observer(() => {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <div className="container">
+      <div className="card">
         <h2 className={styles.title}>{t("nav.add")}</h2>
         <Space
           vertical

@@ -56,8 +56,8 @@ const Profile = observer(() => {
   }, [t]);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <div className="container">
+      <div className="card">
         <Title heading={3}>{t("profile.title")}</Title>
         <div className={styles.email}>{user?.email}</div>
         {user?.emailVerified && (

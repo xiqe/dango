@@ -25,8 +25,8 @@ const EmailVerification = observer(() => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <div className="container">
+      <div className="card">
         <h2 className={styles.title}>{t("verification.title")}</h2>
         <Typography.Paragraph>
           {t("verification.description")}

@@ -28,8 +28,8 @@ const Word = observer(() => {
 
   if (!authStore.user) {
     return (
-      <div className={styles.container}>
-        <div className={styles.card}>
+      <div className="container">
+        <div className="card">
           <Text>{t("common.pleaseLogin")}</Text>
         </div>
       </div>
@@ -37,8 +37,8 @@ const Word = observer(() => {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <div className="container">
+      <div className="card">
         <h2 className={styles.title}>{t("addWord.listTitle")}</h2>
         <div className={styles.searchContainer}>
           <Input

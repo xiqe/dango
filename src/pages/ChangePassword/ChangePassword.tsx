@@ -35,8 +35,8 @@ const ChangePassword = observer(() => {
   );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <div className="container">
+      <div className="card">
         <Title heading={3}>{t("profile.changePassword")}</Title>
 
         <Form onSubmit={handleUpdatePassword}>
@@ -61,21 +61,21 @@ const ChangePassword = observer(() => {
           />
           <div className={styles.actionButtons}>
             <Button
-              theme="solid"
-              size="large"
-              className={styles.button}
-              onClick={() => navigate("/profile")}
-            >
-              {t("common.cancel")}
-            </Button>
-            <Button
               htmlType="submit"
               theme="solid"
               size="large"
-              className={styles.button2}
+              className={styles.button}
               loading={loading}
             >
               {t("common.confirm")}
+            </Button>
+            <Button
+              theme="solid"
+              type="tertiary"
+              size="large"
+              onClick={() => navigate("/profile")}
+            >
+              {t("common.cancel")}
             </Button>
           </div>
         </Form>

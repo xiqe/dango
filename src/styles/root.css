@@ -103,3 +103,17 @@ body {
 .semi-button {
   border-radius: var(--radius-common);
 }
+
+.container {
+  padding: 16px;
+}
+
+.card {
+  padding: 8px;
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  line-height: 20px;
+  background-color: var(--bg-color-white);
+  border-radius: var(--radius-common);
+  margin-bottom: 8px;
+}
