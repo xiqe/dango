@@ -1,14 +1,11 @@
 .layout {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--bg-color-gray);
-  padding-bottom: calc(60px + env(safe-area-inset-bottom));
 }
 
 .content {
   flex: 1;
-  margin-bottom: env(safe-area-inset-bottom);
 }
 
 .nav {
@@ -20,7 +17,6 @@
   display: flex;
   background-color: var(--bg-color);
   border-top: 1px solid var(--border-color);
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .navItem {
