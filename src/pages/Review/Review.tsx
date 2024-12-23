@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Typography, Space, Progress } from "@douyinfe/semi-ui";
+import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
-import { getWords, updateWordProgress } from "@/services/firebase/words";
+import { updateWordProgress } from "@/services/firebase/words";
 import authStore from "@/stores/AuthStore";
+import wordStore from "@/stores/WordStore";
 import styles from "./review.module.css";
 
 const { Text, Title } = Typography;
@@ -15,9 +17,8 @@ interface ReviewState {
   isJapaneseQuestion: boolean;
 }
 
-const Review = () => {
+const Review = observer(() => {
   const { t } = useTranslation();
-  const [words, setWords] = useState<IWord[]>([]);
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentReview, setCurrentReview] = useState<ReviewState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,31 +30,20 @@ const Review = () => {
     };
   };
 
-  const loadWords = useCallback(async () => {
-    if (!authStore.user?.uid) return;
-    try {
-      const fetchedWords = await getWords(authStore.user.uid);
-      setWords(fetchedWords);
-      const reviewWords = fetchedWords.filter(
-        (word: IWord) => word.nextReviewDate <= Date.now()
-      );
-      setCurrentReview(
-        reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
-      );
-    } catch (error) {
-      console.error("Error loading words from Firestore:", error);
-    }
-  }, []);
-
   useEffect(() => {
-    loadWords();
-  }, [loadWords]);
+    const reviewWords = wordStore.words.filter(
+      (word) => word.nextReviewDate <= Date.now()
+    );
+    setCurrentReview(
+      reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
+    );
+  }, [wordStore.words]);
 
   const handleReview = useCallback(
     async (remembered: boolean) => {
       if (currentReview) {
         setIsLoading(true);
-        const updatedWords = words.map((word) => {
+        const updatedWords = wordStore.words.map((word) => {
           if (word.id === currentReview.word.id) {
             const newStage = remembered
               ? Math.min(word.stage + 1, REVIEW_INTERVALS.length - 1)
@@ -102,7 +92,7 @@ const Review = () => {
                 1000,
           });
 
-          setWords(updatedWords);
+          wordStore.updateWords(updatedWords);
           const remainingWords = updatedWords.filter(
             (word) => word.nextReviewDate <= Date.now()
           );
@@ -117,24 +107,11 @@ const Review = () => {
         }
       }
     },
-    [currentReview, words]
+    [currentReview]
   );
 
-  const getProgress = useCallback(() => {
-    const totalReviews = words.reduce((sum, word) => sum + word.reviewCount, 0);
-    const totalCorrect = words.reduce(
-      (sum, word) => sum + word.correctCount,
-      0
-    );
-    const correctRate =
-      totalReviews > 0 ? (totalCorrect / totalReviews) * 100 : 0;
-    return { correctRate, totalReviews };
-  }, [words]);
-
-  const progress = getProgress();
-  const todayWords = words.filter(
-    (word) => word.nextReviewDate <= Date.now()
-  ).length;
+  const progress = wordStore.reviewProgress;
+  const todayWords = wordStore.todayWords;
 
   return (
     <div className={styles.container}>
@@ -224,6 +201,6 @@ const Review = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Review;

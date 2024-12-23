@@ -13,6 +13,9 @@ export default {
     search: "検索...",
     details: "詳細",
     save: "保存",
+    export: "エクスポート",
+    exportSuccess: "エクスポートに成功しました",
+    exportError: "エクスポートに失敗しました",
     notFound: "単語が見つかりません",
   },
   nav: {

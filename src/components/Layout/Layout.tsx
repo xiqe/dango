@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { observer } from "mobx-react-lite";
 import { Add, Word, Test, Setting } from "@/assets/index";
+import authStore from "@/stores/AuthStore";
+import wordStore from "@/stores/WordStore";
 import styles from "./layout.module.css";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = observer(({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (authStore.user && !wordStore.initialized) {
+      wordStore.loadWords();
+    }
+  }, [authStore.user]);
 
   const menus = [
     { key: "/", text: t("nav.task"), icon: <Test className={styles.icon} /> },
@@ -51,6 +60,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </nav>
     </div>
   );
-};
+});
 
 export default Layout;

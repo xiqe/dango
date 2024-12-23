@@ -1,95 +1,30 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Space, Typography, Input } from "@douyinfe/semi-ui";
 import { Search } from "@/assets/index";
-import { IWord } from "@/services/types";
-import { getWords } from "@/services/firebase/words";
 import { observer } from "mobx-react-lite";
 import authStore from "@/stores/AuthStore";
+import wordStore from "@/stores/WordStore";
 import { useNavigate } from "react-router-dom";
 import styles from "./word.module.css";
 
 const { Text, Title } = Typography;
 
-const levenshteinDistance = (str1: string, str2: string): number => {
-  const m = str1.length;
-  const n = str2.length;
-  const dp: number[][] = Array.from({ length: m + 1 }, () =>
-    Array(n + 1).fill(0)
-  );
-
-  for (let i = 0; i <= m; i++) dp[i][0] = i;
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
-
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      if (str1[i - 1] === str2[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1];
-      } else {
-        dp[i][j] = Math.min(
-          dp[i - 1][j - 1] + 1,
-          dp[i - 1][j] + 1,
-          dp[i][j - 1] + 1
-        );
-      }
-    }
-  }
-  return dp[m][n];
-};
-
-const calculateSimilarity = (str1: string, str2: string): number => {
-  if (!str1 || !str2) return 0;
-  const maxLength = Math.max(str1.length, str2.length);
-  if (maxLength === 0) return 1;
-  const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
-  return 1 - distance / maxLength;
-};
-
-const SIMILARITY_THRESHOLD = 0.3;
-
 const Word = observer(() => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [words, setWords] = useState<IWord[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const loadWords = useCallback(async () => {
-    if (!authStore.user?.uid) return;
-    try {
-      const fetchedWords = await getWords(authStore.user.uid);
-      setWords(fetchedWords);
-    } catch (error) {
-      console.error("Error loading words:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [authStore.user?.uid]);
-
-  useEffect(() => {
-    loadWords();
-  }, [loadWords]);
-
   const filteredWords = useMemo(() => {
-    if (!searchTerm) return words;
+    if (!searchTerm) return wordStore.words;
 
-    return words
-      .map((word) => {
-        const japaneseSimilarity = calculateSimilarity(
-          word.japanese,
-          searchTerm
-        );
-        const chineseSimilarity = calculateSimilarity(word.chinese, searchTerm);
-        const maxSimilarity = Math.max(japaneseSimilarity, chineseSimilarity);
-
-        return {
-          ...word,
-          similarity: maxSimilarity,
-        };
-      })
-      .filter((word) => word.similarity >= SIMILARITY_THRESHOLD)
-      .sort((a, b) => b.similarity - a.similarity);
-  }, [words, searchTerm]);
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return wordStore.words.filter(
+      (word) =>
+        word.japanese.toLowerCase().includes(lowerSearchTerm) ||
+        word.chinese.toLowerCase().includes(lowerSearchTerm)
+    );
+  }, [wordStore.words, searchTerm]);
 
   if (!authStore.user) {
     return (
@@ -116,7 +51,7 @@ const Word = observer(() => {
           />
         </div>
         <Space vertical align="start" style={{ width: "100%" }}>
-          {loading ? (
+          {wordStore.loading ? (
             <Text type="tertiary">{t("common.loading")}</Text>
           ) : filteredWords.length === 0 ? (
             <Text type="tertiary">
@@ -156,4 +91,5 @@ const Word = observer(() => {
     </div>
   );
 });
+
 export default Word;
