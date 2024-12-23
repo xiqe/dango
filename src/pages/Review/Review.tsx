@@ -176,7 +176,7 @@ const Review = observer(() => {
                     <Button
                       theme="solid"
                       size="large"
-                      className={styles.button}
+                      className={styles.button2}
                       onClick={() => handleReview(false)}
                       loading={isLoading}
                     >
@@ -185,7 +185,7 @@ const Review = observer(() => {
                     <Button
                       theme="solid"
                       size="large"
-                      className={styles.button2}
+                      className={styles.button}
                       onClick={() => handleReview(true)}
                       loading={isLoading}
                     >
