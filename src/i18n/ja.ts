@@ -53,6 +53,7 @@ export default {
   },
   profile: {
     title: "プロフィール",
+    verified: "認証済み",
     logoutButton: "ログアウト",
     logoutSuccess: "ログアウトしました",
     logoutError: "ログアウトに失敗しました",
