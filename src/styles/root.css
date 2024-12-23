@@ -107,7 +107,7 @@ body {
 }
 
 .container {
-  padding: 16px;
+  padding: 16px 16px 0;
 }
 
 .card {
@@ -117,5 +117,4 @@ body {
   line-height: 20px;
   background-color: var(--bg-color-white);
   border-radius: var(--radius-common);
-  margin-bottom: 8px;
 }
