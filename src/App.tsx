@@ -10,10 +10,19 @@ import WordDetail from "./pages/WordDetail";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
 import Login from "./pages/Login";
+import EmailVerification from "./pages/EmailVerification";
 import "@/styles/root.css";
 
 const PrivateRoute = ({ element }: { element: React.ReactElement }) => {
-  return authStore.user ? element : <Navigate to="/login" replace />;
+  if (!authStore.user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!authStore.isEmailVerified) {
+    return <Navigate to="/verify-email" replace />;
+  }
+
+  return element;
 };
 
 const App = observer(() => {
@@ -37,6 +46,15 @@ const App = observer(() => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
+
+  if (!authStore.isEmailVerified) {
+    return (
+      <Routes>
+        <Route path="/verify-email" element={<EmailVerification />} />
+        <Route path="*" element={<Navigate to="/verify-email" replace />} />
       </Routes>
     );
   }

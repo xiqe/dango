@@ -93,4 +93,12 @@ export default {
       registerSuccess: "登録しました",
     },
   },
+  verification: {
+    title: "メール認証が必要です",
+    description:
+      "続行するにはメールアドレスを認証してください。受信トレイで認証メールを確認してください。",
+    resendButton: "認証メールを再送する",
+    emailSentSuccess: "認証メールを送信しました！",
+    emailSentError: "認証メールの送信に失敗しました。もう一度お試しください。",
+  },
 };

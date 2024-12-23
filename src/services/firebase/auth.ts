@@ -4,6 +4,7 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   updatePassword as firebaseUpdatePassword,
+  sendEmailVerification as firebaseSendEmailVerification,
   User,
   AuthError,
 } from "firebase/auth";
@@ -55,6 +56,15 @@ export const updatePassword = async (user: User, newPassword: string) => {
   try {
     await firebaseUpdatePassword(user, newPassword);
   } catch (error) {
+    throw error;
+  }
+};
+
+export const sendEmailVerification = async (user: User) => {
+  try {
+    await firebaseSendEmailVerification(user);
+  } catch (error) {
+    console.error("Email verification error:", error);
     throw error;
   }
 };

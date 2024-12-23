@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthChange,
   updatePassword,
+  sendEmailVerification,
 } from "@/services/firebase/auth";
 
 class AuthStore {
@@ -51,8 +52,26 @@ class AuthStore {
 
   async register(email: string, password: string) {
     try {
-      await signUp(email, password);
+      const userCredential = await signUp(email, password);
+      // 注册成功后立即发送验证邮件
+      if (userCredential.user) {
+        await sendEmailVerification(userCredential.user);
+      }
       this.setError(null);
+      return true;
+    } catch (error) {
+      const authError = error as AuthError;
+      this.setError(authError.message);
+      return false;
+    }
+  }
+
+  async resendVerificationEmail() {
+    try {
+      if (!this.user) {
+        throw new Error("No user logged in");
+      }
+      await sendEmailVerification(this.user);
       return true;
     } catch (error) {
       const authError = error as AuthError;
@@ -86,6 +105,10 @@ class AuthStore {
       this.setError(authError.message);
       return false;
     }
+  }
+
+  get isEmailVerified() {
+    return this.user?.emailVerified ?? false;
   }
 }
 
