@@ -3,6 +3,8 @@ import { getWords } from "@/services/firebase/words";
 import { IWord } from "@/services/types";
 import authStore from "./AuthStore";
 
+const COMPLETED_STAGE = 7;
+
 class WordStore {
   words: IWord[] = [];
   loading: boolean = false;
@@ -17,18 +19,8 @@ class WordStore {
       .length;
   }
 
-  get reviewProgress() {
-    const totalReviews = this.words.reduce(
-      (sum, word) => sum + word.reviewCount,
-      0
-    );
-    const totalCorrect = this.words.reduce(
-      (sum, word) => sum + word.correctCount,
-      0
-    );
-    const correctRate =
-      totalReviews > 0 ? (totalCorrect / totalReviews) * 100 : 0;
-    return { correctRate, totalReviews };
+  get completedWordsCount() {
+    return this.words.filter((word) => word.stage === COMPLETED_STAGE).length;
   }
 
   async loadWords() {

@@ -1,10 +1,11 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import cls from "clsx";
 import { Button, Space, Typography, Input } from "@douyinfe/semi-ui";
 import { Search } from "@/assets/index";
 import { observer } from "mobx-react-lite";
 import { Voice } from "@/assets/index";
+import { useSpeech } from "@/hooks";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
 import { useNavigate } from "react-router-dom";
@@ -16,62 +17,29 @@ const Word = observer(() => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [japaneseVoice, setJapaneseVoice] =
-    useState<SpeechSynthesisVoice | null>(null);
+  const handleSpeak = useSpeech();
 
-  useEffect(() => {
-    const loadVoices = () => {
-      const voices = window.speechSynthesis.getVoices();
-      const jaVoice =
-        voices.find((voice) => voice.name === "Kyoko") ||
-        voices.find(
-          (voice) =>
-            (voice.lang.toLowerCase().includes("ja") ||
-              voice.name.toLowerCase().includes("japanese")) &&
-            voice.name.toLowerCase().includes("female")
-        ) ||
-        voices.find(
-          (voice) =>
-            voice.lang.toLowerCase().includes("ja") ||
-            voice.name.toLowerCase().includes("japanese")
-        );
-      setJapaneseVoice(jaVoice || null);
-    };
+  const filteredAndSortedWords = useMemo(() => {
+    let words = wordStore.words;
 
-    speechSynthesis.onvoiceschanged = loadVoices;
-    loadVoices();
-
-    return () => {
-      speechSynthesis.onvoiceschanged = null;
-    };
-  }, []);
-
-  const filteredWords = useMemo(() => {
-    if (!searchTerm) return wordStore.words;
-
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    return wordStore.words.filter(
-      (word) =>
-        word.japanese.toLowerCase().includes(lowerSearchTerm) ||
-        word.chinese.toLowerCase().includes(lowerSearchTerm)
-    );
-  }, [wordStore.words, searchTerm]);
-
-  const handleSpeak = (text: string, e?: React.MouseEvent) => {
-    e?.stopPropagation();
-
-    // 停止之前的朗读
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "ja-JP";
-
-    if (japaneseVoice) {
-      utterance.voice = japaneseVoice;
+    if (searchTerm) {
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      words = words.filter(
+        (word) =>
+          word.japanese.toLowerCase().includes(lowerSearchTerm) ||
+          word.chinese.toLowerCase().includes(lowerSearchTerm)
+      );
     }
 
-    window.speechSynthesis.speak(utterance);
-  };
+    return [...words].sort((a, b) => {
+      if (a.stage !== b.stage) {
+        return a.stage - b.stage;
+      }
+      const errorCountA = a.reviewCount - a.correctCount;
+      const errorCountB = b.reviewCount - b.correctCount;
+      return errorCountB - errorCountA;
+    });
+  }, [wordStore.words, searchTerm]);
 
   if (!authStore.user) {
     return (
@@ -100,20 +68,21 @@ const Word = observer(() => {
         <Space vertical align="start" style={{ width: "100%" }}>
           {wordStore.loading ? (
             <Text type="tertiary">{t("common.loading")}</Text>
-          ) : filteredWords.length === 0 ? (
+          ) : filteredAndSortedWords.length === 0 ? (
             <Text type="tertiary">
               {searchTerm
                 ? t("addWord.noSearchResults")
                 : t("addWord.emptyList")}
             </Text>
           ) : (
-            filteredWords.map((word) => (
+            filteredAndSortedWords.map((word) => (
               <div key={word.id} className={styles.wordCard}>
                 <div className={styles.wordCardContent}>
                   <Space vertical align="start">
                     <div>
-                      <Title heading={5} style={{ marginBottom: 4 }}>
-                        {word.japanese}
+                      <Title heading={5} className={styles.title}>
+                        {word.japanese}{" "}
+                        <span className={styles.stage}>{word.stage}</span>
                       </Title>
                     </div>
                     <Text>{word.chinese}</Text>

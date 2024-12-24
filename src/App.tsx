@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { Spin } from "@douyinfe/semi-ui";
 import authStore from "./stores/AuthStore";
-import Layout from "./components/Layout";
+import { Layout } from "@/components";
 import Review from "./pages/Review";
 import Add from "./pages/Add";
 import Word from "./pages/Word";

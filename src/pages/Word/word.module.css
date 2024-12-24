@@ -27,7 +27,26 @@
   justify-content: space-between;
   align-items: flex-start;
   position: relative;
+  .title {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stage {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: var(--success-color);
+    background-color: var(--primary-color);
+    font-size: 12px;
+    margin-left: 8px;
+    user-select: none;
+  }
 }
+
 .remove {
   color: var(--primary-color) !important;
 }

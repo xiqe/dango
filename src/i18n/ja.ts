@@ -33,6 +33,7 @@ export default {
     showAnswer: "答えを見る",
     remembered: "覚えた",
     forgotten: "忘れた",
+    completedWords: "完成",
     completed: "今日の復習は終わりました！",
     accuracy: "正解率",
     memoryLevel: "レベル",

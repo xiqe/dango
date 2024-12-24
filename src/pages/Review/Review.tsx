@@ -5,6 +5,8 @@ import { Button, Typography } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
 import { updateWordProgress } from "@/services/firebase/words";
+import { ProgressRing } from "@/components";
+import { useSpeech } from "@/hooks";
 import { Voice } from "@/assets/index";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
@@ -13,6 +15,7 @@ import styles from "./review.module.css";
 const { Text, Title } = Typography;
 
 const REVIEW_INTERVALS = [1, 2, 4, 7, 15, 30, 60];
+const COMPLETED_STAGE = 7;
 
 interface ReviewState {
   word: IWord;
@@ -24,51 +27,7 @@ const Review = observer(() => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentReview, setCurrentReview] = useState<ReviewState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [japaneseVoice, setJapaneseVoice] =
-    useState<SpeechSynthesisVoice | null>(null);
-
-  useEffect(() => {
-    const loadVoices = () => {
-      const voices = window.speechSynthesis.getVoices();
-      const jaVoice =
-        voices.find((voice) => voice.name === "Kyoko") ||
-        voices.find(
-          (voice) =>
-            (voice.lang.toLowerCase().includes("ja") ||
-              voice.name.toLowerCase().includes("japanese")) &&
-            voice.name.toLowerCase().includes("female")
-        ) ||
-        voices.find(
-          (voice) =>
-            voice.lang.toLowerCase().includes("ja") ||
-            voice.name.toLowerCase().includes("japanese")
-        );
-      setJapaneseVoice(jaVoice || null);
-    };
-
-    speechSynthesis.onvoiceschanged = loadVoices;
-    loadVoices();
-
-    return () => {
-      speechSynthesis.onvoiceschanged = null;
-    };
-  }, []);
-
-  const handleSpeak = useCallback(
-    (text: string, e?: React.MouseEvent) => {
-      e?.stopPropagation();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "ja-JP";
-
-      if (japaneseVoice) {
-        utterance.voice = japaneseVoice;
-      }
-
-      window.speechSynthesis.speak(utterance);
-    },
-    [japaneseVoice]
-  );
+  const handleSpeak = useSpeech();
 
   const getRandomReviewState = (word: IWord): ReviewState => {
     return {
@@ -92,9 +51,24 @@ const Review = observer(() => {
         setIsLoading(true);
         const updatedWords = wordStore.words.map((word) => {
           if (word.id === currentReview.word.id) {
-            const newStage = remembered
-              ? Math.min(word.stage + 1, REVIEW_INTERVALS.length - 1)
-              : Math.max(0, word.stage - 1);
+            let newStage;
+            if (remembered) {
+              if (word.stage === REVIEW_INTERVALS.length - 1) {
+                newStage = COMPLETED_STAGE;
+              } else {
+                newStage = Math.min(
+                  word.stage + 1,
+                  REVIEW_INTERVALS.length - 1
+                );
+              }
+            } else {
+              newStage = Math.max(0, word.stage - 1);
+            }
+
+            const nextReviewInterval =
+              newStage === COMPLETED_STAGE
+                ? Infinity
+                : REVIEW_INTERVALS[newStage] * 24 * 60 * 60 * 1000;
 
             return {
               ...word,
@@ -104,7 +78,9 @@ const Review = observer(() => {
                 : word.correctCount,
               stage: newStage,
               nextReviewDate:
-                Date.now() + REVIEW_INTERVALS[newStage] * 24 * 60 * 60 * 1000,
+                newStage === COMPLETED_STAGE
+                  ? Infinity
+                  : Date.now() + nextReviewInterval,
             };
           }
           return word;
@@ -112,31 +88,36 @@ const Review = observer(() => {
 
         try {
           if (!authStore.user?.uid) return;
+          const currentWord = currentReview.word;
+          let newStage;
+          if (remembered) {
+            if (currentWord.stage === REVIEW_INTERVALS.length - 1) {
+              newStage = COMPLETED_STAGE;
+            } else {
+              newStage = Math.min(
+                currentWord.stage + 1,
+                REVIEW_INTERVALS.length - 1
+              );
+            }
+          } else {
+            newStage = Math.max(0, currentWord.stage - 1);
+          }
+
+          const nextReviewInterval =
+            newStage === COMPLETED_STAGE
+              ? Infinity
+              : REVIEW_INTERVALS[newStage] * 24 * 60 * 60 * 1000;
+
           await updateWordProgress(authStore.user?.uid, currentReview.word.id, {
             reviewCount: currentReview.word.reviewCount + 1,
             correctCount: remembered
               ? currentReview.word.correctCount + 1
               : currentReview.word.correctCount,
-            stage: remembered
-              ? Math.min(
-                  currentReview.word.stage + 1,
-                  REVIEW_INTERVALS.length - 1
-                )
-              : Math.max(0, currentReview.word.stage - 1),
+            stage: newStage,
             nextReviewDate:
-              Date.now() +
-              REVIEW_INTERVALS[
-                remembered
-                  ? Math.min(
-                      currentReview.word.stage + 1,
-                      REVIEW_INTERVALS.length - 1
-                    )
-                  : Math.max(0, currentReview.word.stage - 1)
-              ] *
-                24 *
-                60 *
-                60 *
-                1000,
+              newStage === COMPLETED_STAGE
+                ? Infinity
+                : Date.now() + nextReviewInterval,
           });
 
           wordStore.updateWords(updatedWords);
@@ -157,7 +138,6 @@ const Review = observer(() => {
     [currentReview]
   );
 
-  const progress = wordStore.reviewProgress;
   const todayWords = wordStore.todayWords;
 
   return (
@@ -169,12 +149,10 @@ const Review = observer(() => {
             <div className={cls(styles.num, styles.today)}>{todayWords}</div>
           </div>
           <div className={styles.box}>
-            <div className={styles.boxTitle}>{t("review.correctRate")}</div>
-            <div className={styles.percent}>
-              {progress.correctRate.toFixed(1)}%
+            <div className={styles.boxTitle}>{t("review.completedWords")}</div>
+            <div className={cls(styles.num)}>
+              {wordStore.completedWordsCount}
             </div>
-            <div className={styles.boxTitle}>{t("review.totalReviews")}</div>
-            <div className={styles.percent}>{progress.totalReviews}</div>
           </div>
           <div className={styles.box}>
             <div className={styles.boxTitle}>{t("review.totalWords")}</div>
@@ -199,10 +177,7 @@ const Review = observer(() => {
                     %
                   </span>
                 </div>
-                <div>
-                  {t("review.memoryLevel")}：
-                  <span>{currentReview?.word.correctCount}</span>
-                </div>
+                <ProgressRing stage={currentReview?.word.stage} size={48} />
               </div>
 
               <div className={styles.questionWrapper}>
