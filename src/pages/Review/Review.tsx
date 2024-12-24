@@ -29,6 +29,18 @@ const Review = observer(() => {
     e?.stopPropagation();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "ja-JP";
+
+    const voices = window.speechSynthesis.getVoices();
+    const japaneseVoice = voices.find(
+      (voice) =>
+        voice.lang.toLowerCase().includes("ja") ||
+        voice.name.toLowerCase().includes("japanese")
+    );
+
+    if (japaneseVoice) {
+      utterance.voice = japaneseVoice;
+    }
+
     window.speechSynthesis.speak(utterance);
   }, []);
 
