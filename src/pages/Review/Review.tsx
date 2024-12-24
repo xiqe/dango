@@ -5,6 +5,7 @@ import { Button, Typography } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
 import { updateWordProgress } from "@/services/firebase/words";
+import { Voice } from "@/assets/index";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
 import styles from "./review.module.css";
@@ -23,6 +24,13 @@ const Review = observer(() => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentReview, setCurrentReview] = useState<ReviewState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleSpeak = useCallback((text: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ja-JP";
+    window.speechSynthesis.speak(utterance);
+  }, []);
 
   const getRandomReviewState = (word: IWord): ReviewState => {
     return {
@@ -159,19 +167,33 @@ const Review = observer(() => {
                 </div>
               </div>
 
-              <Title heading={4} className={styles.question}>
-                {currentReview.isJapaneseQuestion
-                  ? currentReview.word.japanese
-                  : currentReview.word.chinese}
-              </Title>
+              <div className={styles.questionWrapper}>
+                <Title heading={4} className={styles.question}>
+                  {currentReview.isJapaneseQuestion
+                    ? currentReview.word.japanese
+                    : currentReview.word.chinese}
+                </Title>
+              </div>
 
               {showAnswer ? (
                 <>
-                  <Title heading={4} className={styles.answer}>
-                    {currentReview.isJapaneseQuestion
-                      ? currentReview.word.chinese
-                      : currentReview.word.japanese}
-                  </Title>
+                  <div className={styles.answerWrapper}>
+                    <Title heading={4} className={styles.answer}>
+                      {currentReview.isJapaneseQuestion
+                        ? currentReview.word.chinese
+                        : currentReview.word.japanese}
+                    </Title>
+                    <Button
+                      type="tertiary"
+                      size="small"
+                      className={styles.voice}
+                      icon={<Voice className={styles.icon} />}
+                      onClick={(e) =>
+                        handleSpeak(currentReview.word.japanese, e)
+                      }
+                      style={{ marginLeft: 8 }}
+                    />
+                  </div>
                   <div className={styles.cardFoot}>
                     <Button
                       theme="solid"
