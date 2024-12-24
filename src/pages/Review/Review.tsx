@@ -24,25 +24,51 @@ const Review = observer(() => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentReview, setCurrentReview] = useState<ReviewState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [japaneseVoice, setJapaneseVoice] =
+    useState<SpeechSynthesisVoice | null>(null);
 
-  const handleSpeak = useCallback((text: string, e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "ja-JP";
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const jaVoice =
+        voices.find((voice) => voice.name === "Kyoko") ||
+        voices.find(
+          (voice) =>
+            (voice.lang.toLowerCase().includes("ja") ||
+              voice.name.toLowerCase().includes("japanese")) &&
+            voice.name.toLowerCase().includes("female")
+        ) ||
+        voices.find(
+          (voice) =>
+            voice.lang.toLowerCase().includes("ja") ||
+            voice.name.toLowerCase().includes("japanese")
+        );
+      setJapaneseVoice(jaVoice || null);
+    };
 
-    const voices = window.speechSynthesis.getVoices();
-    const japaneseVoice = voices.find(
-      (voice) =>
-        voice.lang.toLowerCase().includes("ja") ||
-        voice.name.toLowerCase().includes("japanese")
-    );
+    speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
 
-    if (japaneseVoice) {
-      utterance.voice = japaneseVoice;
-    }
-
-    window.speechSynthesis.speak(utterance);
+    return () => {
+      speechSynthesis.onvoiceschanged = null;
+    };
   }, []);
+
+  const handleSpeak = useCallback(
+    (text: string, e?: React.MouseEvent) => {
+      e?.stopPropagation();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "ja-JP";
+
+      if (japaneseVoice) {
+        utterance.voice = japaneseVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    },
+    [japaneseVoice]
+  );
 
   const getRandomReviewState = (word: IWord): ReviewState => {
     return {

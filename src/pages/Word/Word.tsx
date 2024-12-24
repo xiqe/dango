@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import cls from "clsx";
 import { Button, Space, Typography, Input } from "@douyinfe/semi-ui";
@@ -16,6 +16,35 @@ const Word = observer(() => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [japaneseVoice, setJapaneseVoice] =
+    useState<SpeechSynthesisVoice | null>(null);
+
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const jaVoice =
+        voices.find((voice) => voice.name === "Kyoko") ||
+        voices.find(
+          (voice) =>
+            (voice.lang.toLowerCase().includes("ja") ||
+              voice.name.toLowerCase().includes("japanese")) &&
+            voice.name.toLowerCase().includes("female")
+        ) ||
+        voices.find(
+          (voice) =>
+            voice.lang.toLowerCase().includes("ja") ||
+            voice.name.toLowerCase().includes("japanese")
+        );
+      setJapaneseVoice(jaVoice || null);
+    };
+
+    speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    return () => {
+      speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
 
   const filteredWords = useMemo(() => {
     if (!searchTerm) return wordStore.words;
@@ -27,6 +56,22 @@ const Word = observer(() => {
         word.chinese.toLowerCase().includes(lowerSearchTerm)
     );
   }, [wordStore.words, searchTerm]);
+
+  const handleSpeak = (text: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+
+    // 停止之前的朗读
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ja-JP";
+
+    if (japaneseVoice) {
+      utterance.voice = japaneseVoice;
+    }
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   if (!authStore.user) {
     return (
@@ -86,14 +131,7 @@ const Word = observer(() => {
                     size="small"
                     className={styles.voice}
                     icon={<Voice className={styles.icon} />}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const utterance = new SpeechSynthesisUtterance(
-                        word.japanese
-                      );
-                      utterance.lang = "ja-JP";
-                      window.speechSynthesis.speak(utterance);
-                    }}
+                    onClick={(e) => handleSpeak(word.japanese, e)}
                     style={{ marginLeft: 8 }}
                   />
 
