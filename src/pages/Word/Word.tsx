@@ -1,8 +1,10 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import cls from "clsx";
 import { Button, Space, Typography, Input } from "@douyinfe/semi-ui";
 import { Search } from "@/assets/index";
 import { observer } from "mobx-react-lite";
+import { Voice } from "@/assets/index";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
 import { useNavigate } from "react-router-dom";
@@ -37,7 +39,7 @@ const Word = observer(() => {
   }
 
   return (
-    <div className="container">
+    <div className={cls("container", styles.list)}>
       <div className="card">
         <h2 className={styles.title}>{t("addWord.listTitle")}</h2>
         <div className={styles.searchContainer}>
@@ -64,7 +66,11 @@ const Word = observer(() => {
               <div key={word.id} className={styles.wordCard}>
                 <div className={styles.wordCardContent}>
                   <Space vertical align="start">
-                    <Title heading={5}>{word.japanese}</Title>
+                    <div>
+                      <Title heading={5} style={{ marginBottom: 4 }}>
+                        {word.japanese}
+                      </Title>
+                    </div>
                     <Text>{word.chinese}</Text>
                     <Text type="tertiary" size="small">
                       {t("addWord.nextReview", {
@@ -74,6 +80,23 @@ const Word = observer(() => {
                       })}
                     </Text>
                   </Space>
+
+                  <Button
+                    type="tertiary"
+                    size="small"
+                    className={styles.voice}
+                    icon={<Voice className={styles.icon} />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const utterance = new SpeechSynthesisUtterance(
+                        word.japanese
+                      );
+                      utterance.lang = "ja-JP";
+                      window.speechSynthesis.speak(utterance);
+                    }}
+                    style={{ marginLeft: 8 }}
+                  />
+
                   <Button
                     type="primary"
                     theme="borderless"

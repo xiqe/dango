@@ -7,6 +7,10 @@
   margin-bottom: 16px;
 }
 
+.list {
+  padding: 16px 16px 60px !important;
+}
+
 .wordCard {
   width: 100%;
   background-color: var(--success-color);
@@ -22,6 +26,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  position: relative;
 }
 .remove {
   color: var(--primary-color) !important;
@@ -29,4 +34,19 @@
 .icon {
   width: 16px;
   height: 16px;
+}
+.pronunciationContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.voice {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  .icon {
+    width: 32px;
+    height: 32px;
+    color: var(--primary-color);
+  }
 }
