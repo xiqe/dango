@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { getWords } from "@/services/firebase/words";
 import { IWord } from "@/services/types";
+import { getEndOfDay } from "@/utils";
 import authStore from "./AuthStore";
 
 const COMPLETED_STAGE = 7;
@@ -15,7 +16,8 @@ class WordStore {
   }
 
   get todayWords() {
-    return this.words.filter((word) => word.nextReviewDate <= Date.now())
+    const endOfToday = getEndOfDay();
+    return this.words.filter((word) => word.nextReviewDate <= endOfToday)
       .length;
   }
 

@@ -7,6 +7,7 @@ import { IWord } from "@/services/types";
 import { updateWordProgress } from "@/services/firebase/words";
 import { ProgressRing } from "@/components";
 import { useSpeech } from "@/hooks";
+import { getEndOfDay } from "@/utils";
 import { Voice } from "@/assets/index";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
@@ -21,6 +22,17 @@ interface ReviewState {
   word: IWord;
   isJapaneseQuestion: boolean;
 }
+
+const getNextReviewDate = (stage: number) => {
+  if (stage === COMPLETED_STAGE) return Infinity;
+
+  const today = new Date();
+  return new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + REVIEW_INTERVALS[stage]
+  ).getTime();
+};
 
 const Review = observer(() => {
   const { t } = useTranslation();
@@ -37,8 +49,9 @@ const Review = observer(() => {
   };
 
   useEffect(() => {
+    const endOfToday = getEndOfDay();
     const reviewWords = wordStore.words.filter(
-      (word) => word.nextReviewDate <= Date.now()
+      (word) => word.nextReviewDate <= endOfToday
     );
     setCurrentReview(
       reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
@@ -65,11 +78,6 @@ const Review = observer(() => {
               newStage = Math.max(0, word.stage - 1);
             }
 
-            const nextReviewInterval =
-              newStage === COMPLETED_STAGE
-                ? Infinity
-                : REVIEW_INTERVALS[newStage] * 24 * 60 * 60 * 1000;
-
             return {
               ...word,
               reviewCount: word.reviewCount + 1,
@@ -77,10 +85,7 @@ const Review = observer(() => {
                 ? word.correctCount + 1
                 : word.correctCount,
               stage: newStage,
-              nextReviewDate:
-                newStage === COMPLETED_STAGE
-                  ? Infinity
-                  : Date.now() + nextReviewInterval,
+              nextReviewDate: getNextReviewDate(newStage),
             };
           }
           return word;
@@ -103,26 +108,19 @@ const Review = observer(() => {
             newStage = Math.max(0, currentWord.stage - 1);
           }
 
-          const nextReviewInterval =
-            newStage === COMPLETED_STAGE
-              ? Infinity
-              : REVIEW_INTERVALS[newStage] * 24 * 60 * 60 * 1000;
-
           await updateWordProgress(authStore.user?.uid, currentReview.word.id, {
             reviewCount: currentReview.word.reviewCount + 1,
             correctCount: remembered
               ? currentReview.word.correctCount + 1
               : currentReview.word.correctCount,
             stage: newStage,
-            nextReviewDate:
-              newStage === COMPLETED_STAGE
-                ? Infinity
-                : Date.now() + nextReviewInterval,
+            nextReviewDate: getNextReviewDate(newStage),
           });
 
           wordStore.updateWords(updatedWords);
+          const endOfToday = getEndOfDay();
           const remainingWords = updatedWords.filter(
-            (word) => word.nextReviewDate <= Date.now()
+            (word) => word.nextReviewDate <= endOfToday
           );
           setCurrentReview(
             remainingWords[0] ? getRandomReviewState(remainingWords[0]) : null
