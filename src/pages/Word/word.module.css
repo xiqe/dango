@@ -81,7 +81,8 @@
 
 .tabs {
   display: flex;
-  align-items: center;
+  align-items: top;
+  flex-wrap: wrap;
   flex-direction: row;
   gap: 4px;
   .tab {
