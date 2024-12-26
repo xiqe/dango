@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { Add, Word, Test, Setting } from "@/assets/index";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
+import groupStore from "@/stores/GroupStore";
 import styles from "./layout.module.css";
 
 interface LayoutProps {
@@ -17,8 +18,13 @@ const Layout: React.FC<LayoutProps> = observer(({ children }) => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (authStore.user && !wordStore.initialized) {
-      wordStore.loadWords();
+    if (authStore.user) {
+      if (!wordStore.initialized) {
+        wordStore.loadWords();
+      }
+      if (!groupStore.initialized) {
+        groupStore.loadGroups();
+      }
     }
   }, [authStore.user]);
 

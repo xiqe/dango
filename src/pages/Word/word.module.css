@@ -69,3 +69,40 @@
     color: var(--primary-color);
   }
 }
+
+.groupContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 4px;
+  .tab {
+    padding: 4px 8px;
+    align-items: center;
+    background-color: var(--bg-color-green);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: var(--radius-common);
+  }
+  .active {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+  }
+}
+.setting {
+  display: flex;
+  align-items: center;
+  color: var(--text-color-light);
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+}

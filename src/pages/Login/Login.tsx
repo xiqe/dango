@@ -74,7 +74,7 @@ const Login = observer(() => {
             className={styles.input}
           />
           <Button
-            type="primary"
+            type="secondary"
             htmlType="submit"
             theme="solid"
             size="large"

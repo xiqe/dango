@@ -12,7 +12,6 @@
   .button,
   .button2 {
     width: 100%;
-    background-color: var(--primary-color);
   }
   .button2 {
     background-color: var(--success-color);

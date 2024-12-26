@@ -7,6 +7,7 @@ import Review from "./pages/Review";
 import Add from "./pages/Add";
 import Word from "./pages/Word";
 import WordDetail from "./pages/WordDetail";
+import GroupSetting from "./pages/GroupSetting";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
 import Login from "./pages/Login";
@@ -66,6 +67,7 @@ const App = observer(() => {
         <Route path="/add" element={<PrivateRoute element={<Add />} />} />
         <Route path="/word" element={<PrivateRoute element={<Word />} />} />
         <Route path="/word/:id" element={<WordDetail />} />
+        <Route path="/word/group-setting" element={<GroupSetting />} />
         <Route
           path="/profile"
           element={<PrivateRoute element={<Profile />} />}

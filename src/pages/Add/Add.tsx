@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -7,12 +7,14 @@ import {
   Typography,
   TextArea,
   Toast,
+  Select,
 } from "@douyinfe/semi-ui";
 import { IWord } from "@/services/types";
 import { addWord } from "@/services/firebase/words";
 import { observer } from "mobx-react-lite";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
+import groupStore from "@/stores/GroupStore";
 import styles from "./add.module.css";
 
 const { Text } = Typography;
@@ -21,26 +23,37 @@ const Add = observer(() => {
   const { t } = useTranslation();
   const [japanese, setJapanese] = useState("");
   const [chinese, setChinese] = useState("");
+  const [singleGroupId, setSingleGroupId] = useState("default");
+  const [batchGroupId, setBatchGroupId] = useState("default");
   const [jsonInput, setJsonInput] = useState("");
   const [addingWord, setAddingWord] = useState(false);
   const [addingBatch, setAddingBatch] = useState(false);
 
+  useEffect(() => {
+    if (!groupStore.initialized) {
+      groupStore.loadGroups();
+    }
+  }, []);
+
   const handleAddWord = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (
-        !authStore.user?.uid ||
-        !japanese.trim() ||
-        !chinese.trim() ||
-        addingWord
-      )
+
+      if (!authStore.user?.uid || addingWord) {
         return;
+      }
+
+      if (!japanese.trim() || !chinese.trim()) {
+        Toast.error(t("addWord.requiredFields"));
+        return;
+      }
 
       setAddingWord(true);
       try {
         const newWord: Omit<IWord, "id"> = {
           japanese: japanese.trim(),
           chinese: chinese.trim(),
+          groupId: singleGroupId,
           createdAt: Date.now(),
           nextReviewDate: Date.now(),
           reviewCount: 0,
@@ -61,7 +74,7 @@ const Add = observer(() => {
         setAddingWord(false);
       }
     },
-    [japanese, chinese, authStore.user?.uid, addingWord, t]
+    [japanese, chinese, singleGroupId, authStore.user?.uid, addingWord, t]
   );
 
   const handleBatchUpload = useCallback(async () => {
@@ -88,6 +101,7 @@ const Add = observer(() => {
         const newWord: Omit<IWord, "id"> = {
           japanese: word.japanese.trim(),
           chinese: word.chinese.trim(),
+          groupId: batchGroupId,
           createdAt: Date.now(),
           nextReviewDate: Date.now(),
           reviewCount: 0,
@@ -119,7 +133,7 @@ const Add = observer(() => {
     } finally {
       setAddingBatch(false);
     }
-  }, [jsonInput, authStore.user?.uid, addingBatch, t]);
+  }, [jsonInput, batchGroupId, authStore.user?.uid, addingBatch, t]);
 
   if (!authStore.user) {
     return (
@@ -166,8 +180,22 @@ const Add = observer(() => {
                 showClear
                 disabled={addingWord}
               />
+              <Select
+                value={singleGroupId}
+                onChange={(value) => setSingleGroupId(value as string)}
+                disabled={addingWord}
+                size="large"
+                style={{ width: "100%" }}
+                placeholder={t("common.selectGroup")}
+              >
+                {groupStore.groups.map((group) => (
+                  <Select.Option key={group.id} value={group.id}>
+                    {group.name}
+                  </Select.Option>
+                ))}
+              </Select>
               <Button
-                type="primary"
+                type="secondary"
                 htmlType="submit"
                 theme="solid"
                 size="large"
@@ -197,11 +225,25 @@ const Add = observer(() => {
   {"japanese": "言葉2", "chinese": "词语2"}
 ]`}
             className={styles.jsonInput}
-            rows={6}
+            rows={5}
             disabled={addingBatch}
           />
+          <Select
+            value={batchGroupId}
+            onChange={(value) => setBatchGroupId(value as string)}
+            disabled={addingBatch}
+            size="large"
+            style={{ width: "100%" }}
+            placeholder={t("common.selectGroup")}
+          >
+            {groupStore.groups.map((group) => (
+              <Select.Option key={group.id} value={group.id}>
+                {group.name}
+              </Select.Option>
+            ))}
+          </Select>
           <Button
-            type="primary"
+            type="secondary"
             theme="solid"
             size="large"
             className={styles.submitButton}

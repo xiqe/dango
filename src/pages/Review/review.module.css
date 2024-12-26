@@ -68,6 +68,12 @@
       font-size: 18px;
       font-weight: var(--font-weight-medium);
     }
+    .left {
+      text-align: left;
+    }
+    .groupInfo {
+      margin-bottom: 4px;
+    }
   }
   .question {
     margin: 36px 0;
@@ -97,7 +103,6 @@
     .button,
     .button2 {
       width: 100%;
-      background-color: var(--primary-color);
     }
     .button2 {
       background-color: var(--success-color);

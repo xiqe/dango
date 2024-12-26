@@ -62,6 +62,7 @@ const ChangePassword = observer(() => {
           <div className={styles.actionButtons}>
             <Button
               htmlType="submit"
+              type="secondary"
               theme="solid"
               size="large"
               className={styles.button}

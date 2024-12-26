@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import cls from "clsx";
-import { Button, Typography } from "@douyinfe/semi-ui";
+import { Button, Typography, Tag } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
 import { updateWordProgress } from "@/services/firebase/words";
@@ -11,6 +11,7 @@ import { getEndOfDay } from "@/utils";
 import { Voice } from "@/assets/index";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
+import groupStore from "@/stores/GroupStore";
 import styles from "./review.module.css";
 
 const { Text, Title } = Typography;
@@ -57,6 +58,15 @@ const Review = observer(() => {
       reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
     );
   }, [wordStore.words]);
+
+  const getGroupName = useCallback(
+    (groupId: string | undefined) => {
+      if (!groupId) return t("common.all");
+      const group = groupStore.groups.find((g) => g.id === groupId);
+      return group ? group.name : t("common.all");
+    },
+    [groupStore.groups, t]
+  );
 
   const handleReview = useCallback(
     async (remembered: boolean) => {
@@ -162,7 +172,12 @@ const Review = observer(() => {
           {currentReview ? (
             <div className={styles.wordCard}>
               <div className={styles.statistics}>
-                <div>
+                <div className={styles.left}>
+                  <div className={styles.groupInfo}>
+                    <Tag color="blue" size="large">
+                      {getGroupName(currentReview.word.groupId)}
+                    </Tag>
+                  </div>
                   {t("review.accuracy")}：
                   <span>
                     {currentReview.word.reviewCount === 0
@@ -216,6 +231,7 @@ const Review = observer(() => {
                       {t("review.forgotten")}
                     </Button>
                     <Button
+                      type="secondary"
                       theme="solid"
                       size="large"
                       className={styles.button}
@@ -229,7 +245,7 @@ const Review = observer(() => {
               ) : (
                 <div className={styles.cardFoot}>
                   <Button
-                    type="primary"
+                    type="secondary"
                     theme="solid"
                     size="large"
                     className={styles.button}

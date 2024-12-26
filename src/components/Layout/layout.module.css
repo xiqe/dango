@@ -1,7 +1,6 @@
 .layout {
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-color-gray);
   max-height: 100%;
 }
 

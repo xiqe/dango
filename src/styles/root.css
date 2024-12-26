@@ -106,6 +106,15 @@ body {
 .semi-button {
   border-radius: var(--radius-common);
 }
+.semi-modal-small {
+  width: 90%;
+}
+.semi-button-secondary {
+  background-color: var(--primary-color);
+}
+.semi-button-secondary:hover {
+  background-color: var(--primary-color);
+}
 
 .container {
   padding: 16px 16px 0;

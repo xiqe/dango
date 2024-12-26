@@ -7,6 +7,7 @@ import { getWord, updateWord, deleteWord } from "@/services/firebase/words";
 import { IWord } from "@/services/types";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
+import groupStore from "@/stores/GroupStore";
 import styles from "./detail.module.css";
 
 const { Text } = Typography;
@@ -19,6 +20,12 @@ const WordDetail = observer(() => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    if (!groupStore.initialized) {
+      groupStore.loadGroups();
+    }
+  }, []);
 
   useEffect(() => {
     const loadWord = async () => {
@@ -39,6 +46,7 @@ const WordDetail = observer(() => {
   const handleUpdate = async (values: {
     japanese: string;
     chinese: string;
+    groupId: string;
   }) => {
     if (!authStore.user?.uid || !id || !word) return;
 
@@ -48,6 +56,7 @@ const WordDetail = observer(() => {
         ...word,
         japanese: values.japanese,
         chinese: values.chinese,
+        groupId: values.groupId,
       });
       await wordStore.loadWords();
       navigate("/word");
@@ -107,7 +116,11 @@ const WordDetail = observer(() => {
     <div className={styles.container}>
       <div className={styles.card}>
         <Form
-          initValues={{ japanese: word.japanese, chinese: word.chinese }}
+          initValues={{
+            japanese: word.japanese,
+            chinese: word.chinese,
+            groupId: word.groupId || "default",
+          }}
           onSubmit={handleUpdate}
         >
           <Form.Input
@@ -122,10 +135,23 @@ const WordDetail = observer(() => {
             rules={[{ required: true }]}
             size="large"
           />
+          <Form.Select
+            field="groupId"
+            label={t("common.group")}
+            size="large"
+            placeholder={t("common.selectGroup")}
+            style={{ width: "100%" }}
+          >
+            {groupStore.groups.map((group) => (
+              <Form.Select.Option key={group.id} value={group.id}>
+                {group.name}
+              </Form.Select.Option>
+            ))}
+          </Form.Select>
           <div className={styles.actionButtons}>
             <Button
               theme="solid"
-              type="primary"
+              type="secondary"
               htmlType="submit"
               loading={saving}
               className={styles.button}

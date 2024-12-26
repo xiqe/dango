@@ -34,7 +34,7 @@ const EmailVerification = observer(() => {
         <div className={styles.actionButtons}>
           <Button
             theme="solid"
-            type="primary"
+            type="secondary"
             size="large"
             className={styles.button}
             loading={sending}

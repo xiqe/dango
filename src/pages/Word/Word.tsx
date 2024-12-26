@@ -2,12 +2,13 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import cls from "clsx";
 import { Button, Space, Typography, Input } from "@douyinfe/semi-ui";
-import { Search } from "@/assets/index";
+import { Search, Setting } from "@/assets/index";
 import { observer } from "mobx-react-lite";
 import { Voice } from "@/assets/index";
 import { useSpeech } from "@/hooks";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
+import groupStore from "@/stores/GroupStore";
 import { useNavigate } from "react-router-dom";
 import styles from "./word.module.css";
 
@@ -20,7 +21,12 @@ const Word = observer(() => {
   const handleSpeak = useSpeech();
 
   const filteredAndSortedWords = useMemo(() => {
-    let words = wordStore.words;
+    let words =
+      groupStore.currentGroupId === "default"
+        ? wordStore.words
+        : wordStore.words.filter(
+            (word) => word.groupId === groupStore.currentGroupId
+          );
 
     if (searchTerm) {
       const lowerSearchTerm = searchTerm.toLowerCase();
@@ -39,7 +45,7 @@ const Word = observer(() => {
       const errorCountB = b.reviewCount - b.correctCount;
       return errorCountB - errorCountA;
     });
-  }, [wordStore.words, searchTerm]);
+  }, [wordStore.words, searchTerm, groupStore.currentGroupId]);
 
   if (!authStore.user) {
     return (
@@ -54,7 +60,6 @@ const Word = observer(() => {
   return (
     <div className={cls("container", styles.list)}>
       <div className="card">
-        <h2 className={styles.title}>{t("addWord.listTitle")}</h2>
         <div className={styles.searchContainer}>
           <Input
             prefix={<Search className={styles.icon} />}
@@ -65,6 +70,36 @@ const Word = observer(() => {
             style={{ marginBottom: 16 }}
           />
         </div>
+
+        <div className={styles.groupContainer}>
+          <div className={styles.tabs}>
+            {groupStore.groups.map((group) => (
+              <div
+                key={group.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => groupStore.setCurrentGroup(group.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    groupStore.setCurrentGroup(group.id);
+                  }
+                }}
+                className={cls(styles.tab, {
+                  [styles.active]: group.id === groupStore.currentGroupId,
+                })}
+              >
+                <span>{group.name}</span>
+              </div>
+            ))}
+          </div>
+          <div
+            className={styles.setting}
+            onClick={() => navigate("/word/group-setting")}
+          >
+            <Setting className={styles.icon} />
+          </div>
+        </div>
+
         <Space vertical align="start" style={{ width: "100%" }}>
           {wordStore.loading ? (
             <Text type="tertiary">{t("common.loading")}</Text>

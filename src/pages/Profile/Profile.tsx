@@ -79,7 +79,7 @@ const Profile = observer(() => {
 
           <Button
             theme="solid"
-            type="primary"
+            type="secondary"
             size="large"
             className={styles.actionButton}
             onClick={() => navigate("/change-password")}
