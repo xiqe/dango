@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -23,17 +23,11 @@ const Add = observer(() => {
   const { t } = useTranslation();
   const [japanese, setJapanese] = useState("");
   const [chinese, setChinese] = useState("");
-  const [singleGroupId, setSingleGroupId] = useState("default");
-  const [batchGroupId, setBatchGroupId] = useState("default");
+  const [singleGroupId, setSingleGroupId] = useState("");
+  const [batchGroupId, setBatchGroupId] = useState("");
   const [jsonInput, setJsonInput] = useState("");
   const [addingWord, setAddingWord] = useState(false);
   const [addingBatch, setAddingBatch] = useState(false);
-
-  useEffect(() => {
-    if (!groupStore.initialized) {
-      groupStore.loadGroups();
-    }
-  }, []);
 
   const handleAddWord = useCallback(
     async (e: React.FormEvent) => {
@@ -144,6 +138,7 @@ const Add = observer(() => {
       </div>
     );
   }
+  console.log(groupStore.groups);
 
   return (
     <div className="container">
@@ -186,7 +181,7 @@ const Add = observer(() => {
                 disabled={addingWord}
                 size="large"
                 style={{ width: "100%" }}
-                placeholder={t("common.selectGroup")}
+                placeholder={t("common.group")}
               >
                 {groupStore.groups.map((group) => (
                   <Select.Option key={group.id} value={group.id}>
@@ -234,7 +229,7 @@ const Add = observer(() => {
             disabled={addingBatch}
             size="large"
             style={{ width: "100%" }}
-            placeholder={t("common.selectGroup")}
+            placeholder={t("common.group")}
           >
             {groupStore.groups.map((group) => (
               <Select.Option key={group.id} value={group.id}>

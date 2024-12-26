@@ -73,7 +73,7 @@ const Word = observer(() => {
 
         <div className={styles.groupContainer}>
           <div className={styles.tabs}>
-            {groupStore.groups.map((group) => (
+            {groupStore.allGroups.map((group) => (
               <div
                 key={group.id}
                 role="button"
