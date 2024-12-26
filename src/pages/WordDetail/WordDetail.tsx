@@ -119,7 +119,7 @@ const WordDetail = observer(() => {
           initValues={{
             japanese: word.japanese,
             chinese: word.chinese,
-            groupId: word.groupId || "default",
+            groupId: word.groupId,
           }}
           onSubmit={handleUpdate}
         >
@@ -139,7 +139,7 @@ const WordDetail = observer(() => {
             field="groupId"
             label={t("common.group")}
             size="large"
-            placeholder={t("common.selectGroup")}
+            placeholder={t("common.group")}
             style={{ width: "100%" }}
           >
             {groupStore.groups.map((group) => (
