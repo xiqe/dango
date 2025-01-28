@@ -138,7 +138,6 @@ const Add = observer(() => {
       </div>
     );
   }
-  console.log(groupStore.groups);
 
   return (
     <div className="container">
