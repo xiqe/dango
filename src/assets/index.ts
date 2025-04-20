@@ -1,6 +1,7 @@
 export { default as Add } from "./icons/add.svg?react";
 export { default as Create } from "./icons/create.svg?react";
 export { default as Edit } from "./icons/edit.svg?react";
+export { default as Practise } from "./icons/practise.svg?react";
 export { default as Search } from "./icons/search.svg?react";
 export { default as Setting } from "./icons/setting.svg?react";
 export { default as Test } from "./icons/test.svg?react";

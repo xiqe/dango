@@ -5,6 +5,7 @@ import authStore from "./stores/AuthStore";
 import { Layout } from "@/components";
 import Review from "./pages/Review";
 import Add from "./pages/Add";
+import Practise from "./pages/Practise";
 import Word from "./pages/Word";
 import WordDetail from "./pages/WordDetail";
 import GroupSetting from "./pages/GroupSetting";
@@ -64,6 +65,10 @@ const App = observer(() => {
     <Layout>
       <Routes>
         <Route path="/" element={<PrivateRoute element={<Review />} />} />
+        <Route
+          path="/practise"
+          element={<PrivateRoute element={<Practise />} />}
+        />
         <Route path="/add" element={<PrivateRoute element={<Add />} />} />
         <Route path="/word" element={<PrivateRoute element={<Word />} />} />
         <Route path="/word/:id" element={<WordDetail />} />

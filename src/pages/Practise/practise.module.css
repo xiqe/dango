@@ -1,0 +1,77 @@
+.reviewArea {
+  width: 100%;
+  text-align: center;
+  min-height: 200px;
+  margin-top: 4px;
+}
+
+.completedMessage {
+  margin-top: 40px;
+}
+
+.wordCard {
+  width: 100%;
+  height: calc(100svh - 60px - 32px - 4px - 80px);
+  background-color: var(--bg-color-blue);
+  border: 1px solid var(--border-color-blue);
+  padding: 20px;
+  border-radius: var(--radius-common);
+  position: relative;
+  .statistics {
+    display: flex;
+    justify-content: space-between;
+    align-items: top;
+    color: var(--text-color);
+    span {
+      font-size: 18px;
+      font-weight: var(--font-weight-medium);
+    }
+    .left {
+      text-align: left;
+    }
+    .groupInfo {
+      margin-bottom: 4px;
+    }
+  }
+  .question {
+    margin: 36px 0;
+    color: var(--primary-color);
+  }
+  .answer {
+    margin: 0 auto;
+    width: 80%;
+    padding: 24px 0;
+    color: var(--bg-color);
+    background-color: var(--primary-color);
+  }
+  .voice {
+    margin-top: 20px;
+    .icon {
+      width: 32px;
+      height: 32px;
+      color: var(--primary-color);
+    }
+  }
+  .cardFoot {
+    position: absolute;
+    width: calc(100% - 40px);
+    display: flex;
+    bottom: 24px;
+    gap: 16px;
+    .button,
+    .button2 {
+      width: 100%;
+    }
+    .button2 {
+      background-color: var(--success-color);
+    }
+  }
+}
+
+.stageSelector {
+  display: flex;
+  justify-content: center;
+  height: 60px;
+  margin-bottom: 20px;
+  gap: 8px;
+}

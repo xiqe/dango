@@ -14,6 +14,8 @@
   --bg-primary-hover: var(--success-color);
   --bg-color-gray: #fdfdfd;
   --bg-color-green: #f4fde8;
+  --bg-color-blue: #e8f5ff;
+  --border-color-blue: #b3d8ff;
 
   /* 覆盖 Semi UI 的变量 */
   --semi-color-primary: var(--success-color);

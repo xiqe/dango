@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { observer } from "mobx-react-lite";
-import { Add, Word, Test, Setting } from "@/assets/index";
+import { Add, Word, Test, Setting, Practise } from "@/assets/index";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
 import groupStore from "@/stores/GroupStore";
@@ -30,6 +30,11 @@ const Layout: React.FC<LayoutProps> = observer(({ children }) => {
 
   const menus = [
     { key: "/", text: t("nav.task"), icon: <Test className={styles.icon} /> },
+    {
+      key: "/practise",
+      text: t("nav.practise"),
+      icon: <Practise className={styles.icon} />,
+    },
     {
       key: "/add",
       text: t("nav.add"),

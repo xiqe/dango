@@ -23,6 +23,7 @@ export default {
   },
   nav: {
     task: "タスク",
+    practise: "練習",
     add: "単語追加",
     wordlist: "単語帳",
     profile: "プロフィール",
@@ -40,6 +41,13 @@ export default {
     completed: "今日の復習は終わりました！",
     accuracy: "正解率",
     memoryLevel: "レベル",
+  },
+  practise: {
+    minStage: "最小ステージ",
+    maxStage: "最大ステージ",
+    next: "次の単語",
+    japanese: "日本語問題",
+    chinese: "中国語問題",
   },
   addWord: {
     listTitle: "単語リスト",
