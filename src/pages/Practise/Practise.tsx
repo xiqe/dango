@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Typography, Tag, Select } from "@douyinfe/semi-ui";
+import { Button, Typography, Tag } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
 import { ProgressRing } from "@/components";
@@ -19,25 +19,19 @@ interface WordState {
   isJapaneseQuestion: boolean;
 }
 
-interface StageRange {
-  min: number;
-  max: number;
-}
-
 const Practise = observer(() => {
   const { t } = useTranslation();
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentWord, setCurrentWord] = useState<WordState | null>(null);
   const [practiseWords, setPractiseWords] = useState<WordState[]>([]);
-  const [stageRange, setStageRange] = useState<StageRange>({
-    min: 0,
-    max: 6,
-  });
-  const [isJapaneseQuestion, setIsJapaneseQuestion] = useState(true);
+  const [selectedStages, setSelectedStages] = useState<number[]>([
+    0, 1, 2, 3, 4, 5, 6,
+  ]);
+  const [isJapaneseQuestion, setIsJapaneseQuestion] = useState(false);
 
   useEffect(() => {
-    const practiseWords = wordStore.words.filter(
-      (word) => word.stage >= stageRange.min && word.stage <= stageRange.max
+    const practiseWords = wordStore.words.filter((word) =>
+      selectedStages.includes(word.stage)
     );
     const wordState = practiseWords.map((word) => ({
       word,
@@ -45,7 +39,7 @@ const Practise = observer(() => {
     }));
     setPractiseWords(wordState);
     setCurrentWord(wordState[Math.floor(Math.random() * wordState.length)]);
-  }, [wordStore.words, stageRange, isJapaneseQuestion]);
+  }, [wordStore.words, selectedStages, isJapaneseQuestion]);
 
   const handleSpeak = useSpeech();
 
@@ -68,47 +62,40 @@ const Practise = observer(() => {
   return (
     <div className="container">
       <div className={styles.stageSelector}>
-        <Select
-          style={{ width: 150, marginRight: 8 }}
-          value={stageRange.min}
-          onChange={(value) =>
-            setStageRange((prev) => ({ ...prev, min: value as number }))
-          }
+        {Array.from({ length: COMPLETED_STAGE + 1 }, (_, i) => (
+          <Tag
+            key={i}
+            color={selectedStages.includes(i) ? "blue" : "white"}
+            className={styles.tag}
+            onClick={() => {
+              setSelectedStages((prev) => {
+                if (prev.includes(i)) {
+                  return prev.filter((stage) => stage !== i);
+                } else {
+                  return [...prev, i];
+                }
+              });
+            }}
+          >
+            {i}
+          </Tag>
+        ))}
+      </div>
+      <div className={styles.questionTypeSelector}>
+        <Tag
+          color={isJapaneseQuestion ? "white" : "blue"}
+          onClick={() => setIsJapaneseQuestion(false)}
+          className={styles.tag}
         >
-          {Array.from({ length: COMPLETED_STAGE + 1 }, (_, i) => (
-            <Select.Option key={i} value={i}>
-              {t("practise.minStage")}: {i}
-            </Select.Option>
-          ))}
-        </Select>
-        <Select
-          style={{ width: 150 }}
-          value={stageRange.max}
-          onChange={(value) =>
-            setStageRange((prev) => ({ ...prev, max: value as number }))
-          }
+          {t("practise.chinese")}
+        </Tag>
+        <Tag
+          color={isJapaneseQuestion ? "blue" : "white"}
+          onClick={() => setIsJapaneseQuestion(true)}
+          className={styles.tag}
         >
-          {Array.from({ length: COMPLETED_STAGE + 1 }, (_, i) => (
-            <Select.Option key={i} value={i}>
-              {t("practise.maxStage")}: {i}
-            </Select.Option>
-          ))}
-        </Select>
-        <Select
-          defaultValue="japanese"
-          onChange={(
-            value: string | number | any[] | Record<string, any> | undefined
-          ) => {
-            if (typeof value === "string") {
-              setIsJapaneseQuestion(value === "japanese");
-            }
-          }}
-        >
-          <Select.Option value="japanese">
-            {t("practise.japanese")}
-          </Select.Option>
-          <Select.Option value="chinese">{t("practise.chinese")}</Select.Option>
-        </Select>
+          {t("practise.japanese")}
+        </Tag>
       </div>
 
       <div className={styles.reviewArea}>
