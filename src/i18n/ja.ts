@@ -6,6 +6,8 @@ export default {
     edit: "編集",
     back: "戻る",
     japanese: "日本語",
+    pronunciation: "発音",
+    example: "例文",
     chinese: "中国語",
     group: "グループ",
     addButton: "追加",

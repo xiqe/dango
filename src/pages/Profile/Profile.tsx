@@ -26,10 +26,15 @@ const Profile = observer(() => {
   const handleExportWords = useCallback(() => {
     try {
       // Extract only japanese and chinese properties
-      const wordsToExport = wordStore.words.map(({ japanese, chinese }) => ({
-        japanese,
-        chinese,
-      }));
+      const wordsToExport = wordStore.words.map(
+        ({ id, japanese, chinese, pronunciation, example }) => ({
+          id,
+          japanese,
+          chinese,
+          pronunciation,
+          example,
+        })
+      );
 
       // Create blob and download link
       const jsonString = JSON.stringify(wordsToExport, null, 2);

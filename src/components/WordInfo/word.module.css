@@ -1,0 +1,33 @@
+.answerWrapper {
+  padding: 24px 0;
+  text-align: left;
+  .japanese {
+    margin-bottom: 8px;
+    padding: 8px 0;
+    font-size: 24px;
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+    .pronunciation {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: normal;
+      color: var(--text-color-secondary);
+    }
+    .voice {
+      margin-left: 24px;
+      .icon {
+        width: 32px;
+        height: 32px;
+        color: var(--primary-color);
+      }
+    }
+  }
+  .item {
+    padding: 4px 0;
+    font-size: 16px;
+    .label {
+      margin-right: 8px;
+    }
+  }
+}

@@ -23,8 +23,9 @@ const Add = observer(() => {
   const { t } = useTranslation();
   const [japanese, setJapanese] = useState("");
   const [chinese, setChinese] = useState("");
+  const [pronunciation, setPronunciation] = useState("");
+  const [example, setExample] = useState("");
   const [singleGroupId, setSingleGroupId] = useState("");
-  const [batchGroupId, setBatchGroupId] = useState("");
   const [jsonInput, setJsonInput] = useState("");
   const [addingWord, setAddingWord] = useState(false);
   const [addingBatch, setAddingBatch] = useState(false);
@@ -47,6 +48,8 @@ const Add = observer(() => {
         const newWord: Omit<IWord, "id"> = {
           japanese: japanese.trim(),
           chinese: chinese.trim(),
+          pronunciation: pronunciation.trim(),
+          example: example.trim(),
           groupId: singleGroupId,
           createdAt: Date.now(),
           nextReviewDate: Date.now(),
@@ -60,6 +63,8 @@ const Add = observer(() => {
 
         setJapanese("");
         setChinese("");
+        setPronunciation("");
+        setExample("");
         Toast.success(t("addWord.addSuccess"));
       } catch (error) {
         console.error("Error adding word:", error);
@@ -68,7 +73,16 @@ const Add = observer(() => {
         setAddingWord(false);
       }
     },
-    [japanese, chinese, singleGroupId, authStore.user?.uid, addingWord, t]
+    [
+      japanese,
+      chinese,
+      pronunciation,
+      example,
+      singleGroupId,
+      authStore.user?.uid,
+      addingWord,
+      t,
+    ]
   );
 
   const handleBatchUpload = useCallback(async () => {
@@ -95,7 +109,9 @@ const Add = observer(() => {
         const newWord: Omit<IWord, "id"> = {
           japanese: word.japanese.trim(),
           chinese: word.chinese.trim(),
-          groupId: batchGroupId,
+          pronunciation: word.pronunciation?.trim(),
+          example: word.example?.trim(),
+          groupId: word.groupId?.trim(),
           createdAt: Date.now(),
           nextReviewDate: Date.now(),
           reviewCount: 0,
@@ -127,7 +143,7 @@ const Add = observer(() => {
     } finally {
       setAddingBatch(false);
     }
-  }, [jsonInput, batchGroupId, authStore.user?.uid, addingBatch, t]);
+  }, [jsonInput, authStore.user?.uid, addingBatch, t]);
 
   if (!authStore.user) {
     return (
@@ -174,6 +190,24 @@ const Add = observer(() => {
                 showClear
                 disabled={addingWord}
               />
+              <Input
+                value={pronunciation}
+                onChange={(value) => setPronunciation(value)}
+                placeholder={t("common.pronunciation")}
+                className={styles.input}
+                size="large"
+                showClear
+                disabled={addingWord}
+              />
+              <Input
+                value={example}
+                onChange={(value) => setExample(value)}
+                placeholder={t("common.example")}
+                className={styles.input}
+                size="large"
+                showClear
+                disabled={addingWord}
+              />
               <Select
                 value={singleGroupId}
                 onChange={(value) => setSingleGroupId(value as string)}
@@ -215,27 +249,13 @@ const Add = observer(() => {
             value={jsonInput}
             onChange={(value) => setJsonInput(value)}
             placeholder={`[
-  {"japanese": "言葉1", "chinese": "词语1"},
-  {"japanese": "言葉2", "chinese": "词语2"}
+  {"japanese": "言葉1", "chinese": "词语1", "pronunciation": "ことばいち", "example": "こんにちは"},
+  {"japanese": "言葉2", "chinese": "词语2", "pronunciation": "ことばに", "example": "こんばんは"}
 ]`}
             className={styles.jsonInput}
             rows={5}
             disabled={addingBatch}
           />
-          <Select
-            value={batchGroupId}
-            onChange={(value) => setBatchGroupId(value as string)}
-            disabled={addingBatch}
-            size="large"
-            style={{ width: "100%" }}
-            placeholder={t("common.group")}
-          >
-            {groupStore.groups.map((group) => (
-              <Select.Option key={group.id} value={group.id}>
-                {group.name}
-              </Select.Option>
-            ))}
-          </Select>
           <Button
             type="secondary"
             theme="solid"

@@ -79,21 +79,6 @@
     margin: 36px 0;
     color: var(--primary-color);
   }
-  .answer {
-    margin: 0 auto;
-    width: 80%;
-    padding: 24px 0;
-    color: var(--bg-color);
-    background-color: var(--primary-color);
-  }
-  .voice {
-    margin-top: 20px;
-    .icon {
-      width: 32px;
-      height: 32px;
-      color: var(--primary-color);
-    }
-  }
   .cardFoot {
     position: absolute;
     width: calc(100% - 40px);

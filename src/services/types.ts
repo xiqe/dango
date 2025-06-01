@@ -1,8 +1,10 @@
 export interface IWord {
   id: string;
-  japanese: string;
-  chinese: string;
-  createdAt: number;
+  japanese: string; // 日文
+  chinese: string; // 中文
+  pronunciation?: string; // 注音
+  example?: string; // 例句
+  createdAt: number; // 创建时间
   nextReviewDate: number;
   reviewCount: number;
   correctCount: number;

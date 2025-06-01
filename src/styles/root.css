@@ -50,6 +50,7 @@
   --space-xl: 24px;
 
   --radius-common: 16px;
+  --radius-border: 4px;
 
   --vh: 1vh;
 }
@@ -129,4 +130,8 @@ body {
   line-height: 20px;
   background-color: var(--bg-color-white);
   border-radius: var(--radius-common);
+}
+
+.semi-form-vertical .semi-form-field {
+  padding: 6px 0;
 }

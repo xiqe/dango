@@ -46,6 +46,8 @@ const WordDetail = observer(() => {
   const handleUpdate = async (values: {
     japanese: string;
     chinese: string;
+    pronunciation: string;
+    example: string;
     groupId: string;
   }) => {
     if (!authStore.user?.uid || !id || !word) return;
@@ -56,6 +58,8 @@ const WordDetail = observer(() => {
         ...word,
         japanese: values.japanese,
         chinese: values.chinese,
+        pronunciation: values.pronunciation,
+        example: values.example,
         groupId: values.groupId,
       });
       await wordStore.loadWords();
@@ -119,6 +123,8 @@ const WordDetail = observer(() => {
           initValues={{
             japanese: word.japanese,
             chinese: word.chinese,
+            pronunciation: word.pronunciation,
+            example: word.example,
             groupId: word.groupId,
           }}
           onSubmit={handleUpdate}
@@ -133,6 +139,16 @@ const WordDetail = observer(() => {
             field="chinese"
             label={t("common.chinese")}
             rules={[{ required: true }]}
+            size="large"
+          />
+          <Form.Input
+            field="pronunciation"
+            label={t("common.pronunciation")}
+            size="large"
+          />
+          <Form.Input
+            field="example"
+            label={t("common.example")}
             size="large"
           />
           <Form.Select

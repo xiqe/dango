@@ -12,3 +12,6 @@
 .submitButton {
   width: 100%;
 }
+.semi-space-medium-vertical {
+  row-gap: 8px;
+}

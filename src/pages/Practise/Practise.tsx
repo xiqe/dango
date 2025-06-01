@@ -3,9 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Typography, Tag } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
-import { ProgressRing } from "@/components";
-import { useSpeech } from "@/hooks";
-import { Voice } from "@/assets/index";
+import { ProgressRing, WordInfo } from "@/components";
 import wordStore from "@/stores/WordStore";
 import groupStore from "@/stores/GroupStore";
 import styles from "./practise.module.css";
@@ -40,8 +38,6 @@ const Practise = observer(() => {
     setPractiseWords(wordState);
     setCurrentWord(wordState[Math.floor(Math.random() * wordState.length)]);
   }, [wordStore.words, selectedStages, isJapaneseQuestion]);
-
-  const handleSpeak = useSpeech();
 
   const getGroupName = useCallback(
     (groupId: string | undefined) => {
@@ -123,31 +119,9 @@ const Practise = observer(() => {
               <ProgressRing stage={currentWord?.word.stage} size={48} />
             </div>
 
-            <div className={styles.questionWrapper}>
-              <Title heading={4} className={styles.question}>
-                {currentWord.isJapaneseQuestion
-                  ? currentWord.word.japanese
-                  : currentWord.word.chinese}
-              </Title>
-            </div>
-
             {showAnswer ? (
               <>
-                <div className={styles.answerWrapper}>
-                  <Title heading={4} className={styles.answer}>
-                    {currentWord.isJapaneseQuestion
-                      ? currentWord.word.chinese
-                      : currentWord.word.japanese}
-                  </Title>
-                  <Button
-                    type="tertiary"
-                    size="small"
-                    className={styles.voice}
-                    icon={<Voice className={styles.icon} />}
-                    onClick={(e) => handleSpeak(currentWord.word.japanese, e)}
-                    style={{ marginLeft: 8 }}
-                  />
-                </div>
+                <WordInfo word={currentWord.word} />
                 <div className={styles.cardFoot}>
                   <Button
                     type="secondary"
@@ -161,17 +135,26 @@ const Practise = observer(() => {
                 </div>
               </>
             ) : (
-              <div className={styles.cardFoot}>
-                <Button
-                  type="secondary"
-                  theme="solid"
-                  size="large"
-                  className={styles.button}
-                  onClick={() => setShowAnswer(true)}
-                >
-                  {t("review.showAnswer")}
-                </Button>
-              </div>
+              <>
+                <div className={styles.questionWrapper}>
+                  <Title heading={4} className={styles.question}>
+                    {currentWord.isJapaneseQuestion
+                      ? currentWord.word.japanese
+                      : currentWord.word.chinese}
+                  </Title>
+                </div>
+                <div className={styles.cardFoot}>
+                  <Button
+                    type="secondary"
+                    theme="solid"
+                    size="large"
+                    className={styles.button}
+                    onClick={() => setShowAnswer(true)}
+                  >
+                    {t("review.showAnswer")}
+                  </Button>
+                </div>
+              </>
             )}
           </div>
         ) : (

@@ -5,10 +5,8 @@ import { Button, Typography, Tag } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
 import { updateWordProgress } from "@/services/firebase/words";
-import { ProgressRing } from "@/components";
-import { useSpeech } from "@/hooks";
+import { ProgressRing, WordInfo } from "@/components";
 import { getEndOfDay } from "@/utils";
-import { Voice } from "@/assets/index";
 import authStore from "@/stores/AuthStore";
 import wordStore from "@/stores/WordStore";
 import groupStore from "@/stores/GroupStore";
@@ -40,7 +38,6 @@ const Review = observer(() => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentReview, setCurrentReview] = useState<ReviewState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const handleSpeak = useSpeech();
 
   const getRandomReviewState = (word: IWord): ReviewState => {
     return {
@@ -193,33 +190,9 @@ const Review = observer(() => {
                 <ProgressRing stage={currentReview?.word.stage} size={48} />
               </div>
 
-              <div className={styles.questionWrapper}>
-                <Title heading={4} className={styles.question}>
-                  {currentReview.isJapaneseQuestion
-                    ? currentReview.word.japanese
-                    : currentReview.word.chinese}
-                </Title>
-              </div>
-
               {showAnswer ? (
                 <>
-                  <div className={styles.answerWrapper}>
-                    <Title heading={4} className={styles.answer}>
-                      {currentReview.isJapaneseQuestion
-                        ? currentReview.word.chinese
-                        : currentReview.word.japanese}
-                    </Title>
-                    <Button
-                      type="tertiary"
-                      size="small"
-                      className={styles.voice}
-                      icon={<Voice className={styles.icon} />}
-                      onClick={(e) =>
-                        handleSpeak(currentReview.word.japanese, e)
-                      }
-                      style={{ marginLeft: 8 }}
-                    />
-                  </div>
+                  <WordInfo word={currentReview.word} />
                   <div className={styles.cardFoot}>
                     <Button
                       theme="solid"
@@ -243,17 +216,26 @@ const Review = observer(() => {
                   </div>
                 </>
               ) : (
-                <div className={styles.cardFoot}>
-                  <Button
-                    type="secondary"
-                    theme="solid"
-                    size="large"
-                    className={styles.button}
-                    onClick={() => setShowAnswer(true)}
-                  >
-                    {t("review.showAnswer")}
-                  </Button>
-                </div>
+                <>
+                  <div className={styles.questionWrapper}>
+                    <Title heading={4} className={styles.question}>
+                      {currentReview.isJapaneseQuestion
+                        ? currentReview.word.japanese
+                        : currentReview.word.chinese}
+                    </Title>
+                  </div>
+                  <div className={styles.cardFoot}>
+                    <Button
+                      type="secondary"
+                      theme="solid"
+                      size="large"
+                      className={styles.button}
+                      onClick={() => setShowAnswer(true)}
+                    >
+                      {t("review.showAnswer")}
+                    </Button>
+                  </div>
+                </>
               )}
             </div>
           ) : (
