@@ -48,6 +48,7 @@ export default {
     minStage: "最小ステージ",
     maxStage: "最大ステージ",
     next: "次の単語",
+    resetToNew: "新単語として再設定",
     japanese: "日本語問題",
     chinese: "中国語問題",
   },

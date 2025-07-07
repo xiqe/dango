@@ -3,9 +3,11 @@ import { useTranslation } from "react-i18next";
 import { Button, Typography, Tag } from "@douyinfe/semi-ui";
 import { observer } from "mobx-react-lite";
 import { IWord } from "@/services/types";
+import { updateWordProgress } from "@/services/firebase/words";
 import { ProgressRing, WordInfo } from "@/components";
 import wordStore from "@/stores/WordStore";
 import groupStore from "@/stores/GroupStore";
+import authStore from "@/stores/AuthStore";
 import styles from "./practise.module.css";
 
 const { Text, Title } = Typography;
@@ -26,6 +28,7 @@ const Practise = observer(() => {
     0, 1, 2, 3, 4, 5, 6,
   ]);
   const [isJapaneseQuestion, setIsJapaneseQuestion] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     const practiseWords = wordStore.words.filter((word) =>
@@ -54,6 +57,39 @@ const Practise = observer(() => {
       practiseWords[Math.floor(Math.random() * practiseWords.length)]
     );
   }, [practiseWords]);
+
+  const resetWord = useCallback(async () => {
+    if (!currentWord || !authStore.user?.uid || isResetting) return;
+
+    setIsResetting(true);
+    try {
+      // 重置单词进度：stage 设为 0，nextReviewDate 设为当前时间
+      await updateWordProgress(authStore.user.uid, currentWord.word.id, {
+        stage: 0,
+        nextReviewDate: Date.now(),
+      });
+
+      // 更新本地 store 中的单词数据
+      const updatedWords = wordStore.words.map((word) => {
+        if (word.id === currentWord.word.id) {
+          return {
+            ...word,
+            stage: 0,
+            nextReviewDate: Date.now(),
+          };
+        }
+        return word;
+      });
+      wordStore.updateWords(updatedWords);
+
+      // 跳转到下一个单词
+      toNext();
+    } catch (error) {
+      console.error("Error resetting word:", error);
+    } finally {
+      setIsResetting(false);
+    }
+  }, [currentWord, authStore.user?.uid, isResetting, toNext]);
 
   return (
     <div className="container">
@@ -123,6 +159,16 @@ const Practise = observer(() => {
               <>
                 <WordInfo word={currentWord.word} />
                 <div className={styles.cardFoot}>
+                  <Button
+                    type="danger"
+                    theme="solid"
+                    size="large"
+                    className={styles.button}
+                    onClick={resetWord}
+                    loading={isResetting}
+                  >
+                    {t("practise.resetToNew")}
+                  </Button>
                   <Button
                     type="secondary"
                     theme="solid"
