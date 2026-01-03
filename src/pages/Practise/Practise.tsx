@@ -40,6 +40,7 @@ const Practise = observer(() => {
     }));
     setPractiseWords(wordState);
     setCurrentWord(wordState[Math.floor(Math.random() * wordState.length)]);
+    setShowAnswer(false); // 确保切换单词时重置答案显示状态
   }, [wordStore.words, selectedStages, isJapaneseQuestion]);
 
   const getGroupName = useCallback(
