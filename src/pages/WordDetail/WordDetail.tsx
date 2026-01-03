@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { getWord, updateWord, deleteWord } from "@/services/firebase/words";
 import { IWord } from "@/services/types";
 import authStore from "@/stores/AuthStore";
-import wordStore from "@/stores/WordStore";
 import groupStore from "@/stores/GroupStore";
 import styles from "./detail.module.css";
 
@@ -21,11 +20,7 @@ const WordDetail = observer(() => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    if (!groupStore.initialized) {
-      groupStore.loadGroups();
-    }
-  }, []);
+  // 分组数据通过 Layout 组件的实时订阅自动加载
 
   useEffect(() => {
     const loadWord = async () => {
@@ -62,7 +57,7 @@ const WordDetail = observer(() => {
         example: values.example,
         groupId: values.groupId,
       });
-      await wordStore.loadWords();
+      // 数据通过实时订阅自动更新到 store，无需手动刷新
       navigate("/word");
     } catch (error) {
       console.error("Error updating word:", error);
@@ -77,7 +72,7 @@ const WordDetail = observer(() => {
     setDeleting(true);
     try {
       await deleteWord(authStore.user.uid, id);
-      await wordStore.loadWords();
+      // 数据通过实时订阅自动更新到 store，无需手动刷新
       navigate("/word");
     } catch (error) {
       console.error("Error deleting word:", error);

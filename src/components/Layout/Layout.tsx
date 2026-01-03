@@ -19,13 +19,16 @@ const Layout: React.FC<LayoutProps> = observer(({ children }) => {
 
   useEffect(() => {
     if (authStore.user) {
-      if (!wordStore.initialized) {
-        wordStore.loadWords();
-      }
-      if (!groupStore.initialized) {
-        groupStore.loadGroups();
-      }
+      // 使用实时监听订阅数据，自动利用缓存
+      wordStore.subscribeWords();
+      groupStore.subscribeGroups();
     }
+
+    // 清理函数：用户登出时取消订阅
+    return () => {
+      wordStore.unsubscribeWords();
+      groupStore.unsubscribeGroups();
+    };
   }, [authStore.user]);
 
   const menus = [
