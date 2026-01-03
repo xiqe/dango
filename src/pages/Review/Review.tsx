@@ -125,7 +125,9 @@ const Review = observer(() => {
             nextReviewDate: getNextReviewDate(newStage),
           });
 
-          wordStore.updateWords(updatedWords);
+          // 先重置答案显示状态，避免 MobX 更新触发渲染时短暂显示答案
+          setShowAnswer(false);
+          
           const endOfToday = getEndOfDay();
           const remainingWords = updatedWords.filter(
             (word) => word.nextReviewDate <= endOfToday
@@ -133,7 +135,8 @@ const Review = observer(() => {
           setCurrentReview(
             remainingWords[0] ? getRandomReviewState(remainingWords[0]) : null
           );
-          setShowAnswer(false);
+          
+          wordStore.updateWords(updatedWords);
         } catch (error) {
           console.error("Error updating word progress in Firestore:", error);
         } finally {

@@ -81,10 +81,14 @@ const Practise = observer(() => {
         }
         return word;
       });
-      wordStore.updateWords(updatedWords);
 
-      // 跳转到下一个单词
-      toNext();
+      // 先重置答案显示状态和切换单词，避免 MobX 更新触发渲染时短暂显示答案
+      setShowAnswer(false);
+      setCurrentWord(
+        practiseWords[Math.floor(Math.random() * practiseWords.length)]
+      );
+
+      wordStore.updateWords(updatedWords);
     } catch (error) {
       console.error("Error resetting word:", error);
     } finally {
