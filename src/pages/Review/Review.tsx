@@ -54,6 +54,7 @@ const Review = observer(() => {
     setCurrentReview(
       reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
     );
+    setShowAnswer(false); // 确保切换单词时重置答案显示状态
   }, [wordStore.words]);
 
   const getGroupName = useCallback(
