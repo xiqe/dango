@@ -46,15 +46,23 @@ const Review = observer(() => {
     };
   };
 
+  // 只在初始化时设置 currentReview，后续切换由 handleReview 管理
   useEffect(() => {
     const endOfToday = getEndOfDay();
     const reviewWords = wordStore.words.filter(
       (word) => word.nextReviewDate <= endOfToday
     );
-    setCurrentReview(
-      reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
-    );
-    setShowAnswer(false); // 确保切换单词时重置答案显示状态
+
+    // 如果当前没有复习单词，或者当前单词已不在待复习列表中，则设置新单词
+    const currentWordStillValid = currentReview && 
+      reviewWords.some(w => w.id === currentReview.word.id);
+    
+    if (!currentWordStillValid) {
+      setCurrentReview(
+        reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
+      );
+      setShowAnswer(false);
+    }
   }, [wordStore.words]);
 
   const getGroupName = useCallback(
