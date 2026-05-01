@@ -1,14 +1,19 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { observer } from "mobx-react-lite";
-import { Button, Form, Typography } from "@douyinfe/semi-ui";
-import { useTranslation } from "react-i18next";
-import { getWord, updateWord, deleteWord } from "@/services/firebase/words";
-import { IWord } from "@/services/types";
-import authStore from "@/stores/AuthStore";
-import wordStore from "@/stores/WordStore";
-import groupStore from "@/stores/GroupStore";
-import styles from "./detail.module.css";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { Button, Form, Typography } from '@douyinfe/semi-ui';
+import { useTranslation } from 'react-i18next';
+import {
+  getWord,
+  updateWord,
+  deleteWord,
+  updateWordProgress,
+} from '@/services/firebase/words';
+import { IWord } from '@/services/types';
+import authStore from '@/stores/AuthStore';
+import wordStore from '@/stores/WordStore';
+import groupStore from '@/stores/GroupStore';
+import styles from './detail.module.css';
 
 const { Text } = Typography;
 
@@ -20,6 +25,7 @@ const WordDetail = observer(() => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     if (!groupStore.initialized) {
@@ -34,7 +40,7 @@ const WordDetail = observer(() => {
         const wordData = await getWord(authStore.user.uid, id);
         setWord(wordData);
       } catch (error) {
-        console.error("Error loading word:", error);
+        console.error('Error loading word:', error);
       } finally {
         setLoading(false);
       }
@@ -63,11 +69,27 @@ const WordDetail = observer(() => {
         groupId: values.groupId,
       });
       await wordStore.loadWords();
-      navigate("/word");
+      navigate('/word');
     } catch (error) {
-      console.error("Error updating word:", error);
+      console.error('Error updating word:', error);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleReset = async () => {
+    if (!authStore.user?.uid || !id || !word) return;
+
+    setResetting(true);
+    try {
+      const updates = { stage: 0, nextReviewDate: Date.now() };
+      await updateWordProgress(authStore.user.uid, id, updates);
+      setWord({ ...word, ...updates });
+      await wordStore.loadWords();
+    } catch (error) {
+      console.error('Error resetting word:', error);
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -78,9 +100,9 @@ const WordDetail = observer(() => {
     try {
       await deleteWord(authStore.user.uid, id);
       await wordStore.loadWords();
-      navigate("/word");
+      navigate('/word');
     } catch (error) {
-      console.error("Error deleting word:", error);
+      console.error('Error deleting word:', error);
     } finally {
       setDeleting(false);
     }
@@ -90,7 +112,7 @@ const WordDetail = observer(() => {
     return (
       <div className={styles.container}>
         <div className={styles.card}>
-          <Text>{t("common.pleaseLogin")}</Text>
+          <Text>{t('common.pleaseLogin')}</Text>
         </div>
       </div>
     );
@@ -100,7 +122,7 @@ const WordDetail = observer(() => {
     return (
       <div className={styles.container}>
         <div className={styles.card}>
-          <Text>{t("common.loading")}</Text>
+          <Text>{t('common.loading')}</Text>
         </div>
       </div>
     );
@@ -110,7 +132,7 @@ const WordDetail = observer(() => {
     return (
       <div className={styles.container}>
         <div className={styles.card}>
-          <Text>{t("common.notFound")}</Text>
+          <Text>{t('common.notFound')}</Text>
         </div>
       </div>
     );
@@ -130,33 +152,33 @@ const WordDetail = observer(() => {
           onSubmit={handleUpdate}
         >
           <Form.Input
-            field="japanese"
-            label={t("common.japanese")}
+            field='japanese'
+            label={t('common.japanese')}
             rules={[{ required: true }]}
-            size="large"
+            size='large'
           />
           <Form.Input
-            field="chinese"
-            label={t("common.chinese")}
+            field='chinese'
+            label={t('common.chinese')}
             rules={[{ required: true }]}
-            size="large"
+            size='large'
           />
           <Form.Input
-            field="pronunciation"
-            label={t("common.pronunciation")}
-            size="large"
+            field='pronunciation'
+            label={t('common.pronunciation')}
+            size='large'
           />
           <Form.Input
-            field="example"
-            label={t("common.example")}
-            size="large"
+            field='example'
+            label={t('common.example')}
+            size='large'
           />
           <Form.Select
-            field="groupId"
-            label={t("common.group")}
-            size="large"
-            placeholder={t("common.group")}
-            style={{ width: "100%" }}
+            field='groupId'
+            label={t('common.group')}
+            size='large'
+            placeholder={t('common.group')}
+            style={{ width: '100%' }}
           >
             {groupStore.groups.map((group) => (
               <Form.Select.Option key={group.id} value={group.id}>
@@ -166,33 +188,43 @@ const WordDetail = observer(() => {
           </Form.Select>
           <div className={styles.actionButtons}>
             <Button
-              theme="solid"
-              type="secondary"
-              htmlType="submit"
+              theme='solid'
+              type='secondary'
+              htmlType='submit'
               loading={saving}
               className={styles.button}
-              size="large"
+              size='large'
             >
-              {t("common.save")}
+              {t('common.save')}
             </Button>
 
             <Button
-              theme="solid"
-              type="danger"
+              theme='solid'
+              type='warning'
+              onClick={handleReset}
+              loading={resetting}
+              size='large'
+            >
+              {t('practise.resetToNew')}
+            </Button>
+
+            <Button
+              theme='solid'
+              type='danger'
               onClick={handleDelete}
               loading={deleting}
-              size="large"
+              size='large'
             >
-              {t("common.deleteButton")}
+              {t('common.deleteButton')}
             </Button>
 
             <Button
-              theme="solid"
-              type="tertiary"
-              size="large"
-              onClick={() => navigate("/word")}
+              theme='solid'
+              type='tertiary'
+              size='large'
+              onClick={() => navigate('/word')}
             >
-              {t("common.cancel")}
+              {t('common.cancel')}
             </Button>
           </div>
         </Form>
