@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { Button, Typography, Tag } from "@douyinfe/semi-ui";
-import { observer } from "mobx-react-lite";
-import { IWord } from "@/services/types";
-import { updateWordProgress } from "@/services/firebase/words";
-import { ProgressRing, WordInfo } from "@/components";
-import wordStore from "@/stores/WordStore";
-import groupStore from "@/stores/GroupStore";
-import authStore from "@/stores/AuthStore";
-import styles from "./practise.module.css";
+import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Typography, Tag } from '@douyinfe/semi-ui';
+import { observer } from 'mobx-react-lite';
+import { IWord } from '@/services/types';
+import { updateWordProgress } from '@/services/firebase/words';
+import { ProgressRing, WordInfo } from '@/components';
+import wordStore from '@/stores/WordStore';
+import groupStore from '@/stores/GroupStore';
+import authStore from '@/stores/AuthStore';
+import styles from './practise.module.css';
 
 const { Text, Title } = Typography;
 
@@ -32,7 +32,7 @@ const Practise = observer(() => {
 
   useEffect(() => {
     const practiseWords = wordStore.words.filter((word) =>
-      selectedStages.includes(word.stage)
+      selectedStages.includes(word.stage),
     );
     const wordState = practiseWords.map((word) => ({
       word,
@@ -44,17 +44,17 @@ const Practise = observer(() => {
 
   const getGroupName = useCallback(
     (groupId: string | undefined) => {
-      if (!groupId) return t("common.all");
+      if (!groupId) return t('common.all');
       const group = groupStore.groups.find((g) => g.id === groupId);
-      return group ? group.name : t("common.all");
+      return group ? group.name : t('common.all');
     },
-    [groupStore.groups, t]
+    [groupStore.groups, t],
   );
 
   const toNext = useCallback(() => {
     setShowAnswer(false);
     setCurrentWord(
-      practiseWords[Math.floor(Math.random() * practiseWords.length)]
+      practiseWords[Math.floor(Math.random() * practiseWords.length)],
     );
   }, [practiseWords]);
 
@@ -63,41 +63,30 @@ const Practise = observer(() => {
 
     setIsResetting(true);
     try {
-      // 重置单词进度：stage 设为 0，nextReviewDate 设为当前时间
-      await updateWordProgress(authStore.user.uid, currentWord.word.id, {
-        stage: 0,
-        nextReviewDate: Date.now(),
-      });
-
-      // 更新本地 store 中的单词数据
-      const updatedWords = wordStore.words.map((word) => {
-        if (word.id === currentWord.word.id) {
-          return {
-            ...word,
-            stage: 0,
-            nextReviewDate: Date.now(),
-          };
-        }
-        return word;
-      });
-      wordStore.updateWords(updatedWords);
+      const updates = { stage: 0, nextReviewDate: Date.now() };
+      await updateWordProgress(
+        authStore.user.uid,
+        currentWord.word.id,
+        updates,
+      );
+      wordStore.updateWord(currentWord.word.id, updates);
 
       // 跳转到下一个单词
       toNext();
     } catch (error) {
-      console.error("Error resetting word:", error);
+      console.error('Error resetting word:', error);
     } finally {
       setIsResetting(false);
     }
   }, [currentWord, authStore.user?.uid, isResetting, toNext]);
 
   return (
-    <div className="container">
+    <div className='container'>
       <div className={styles.stageSelector}>
         {Array.from({ length: COMPLETED_STAGE + 1 }, (_, i) => (
           <Tag
             key={i}
-            color={selectedStages.includes(i) ? "blue" : "white"}
+            color={selectedStages.includes(i) ? 'blue' : 'white'}
             className={styles.tag}
             onClick={() => {
               setSelectedStages((prev) => {
@@ -115,18 +104,18 @@ const Practise = observer(() => {
       </div>
       <div className={styles.questionTypeSelector}>
         <Tag
-          color={isJapaneseQuestion ? "white" : "blue"}
+          color={isJapaneseQuestion ? 'white' : 'blue'}
           onClick={() => setIsJapaneseQuestion(false)}
           className={styles.tag}
         >
-          {t("practise.chinese")}
+          {t('practise.chinese')}
         </Tag>
         <Tag
-          color={isJapaneseQuestion ? "blue" : "white"}
+          color={isJapaneseQuestion ? 'blue' : 'white'}
           onClick={() => setIsJapaneseQuestion(true)}
           className={styles.tag}
         >
-          {t("practise.japanese")}
+          {t('practise.japanese')}
         </Tag>
       </div>
 
@@ -136,14 +125,14 @@ const Practise = observer(() => {
             <div className={styles.statistics}>
               <div className={styles.left}>
                 <div className={styles.groupInfo}>
-                  <Tag color="blue" size="large">
+                  <Tag color='blue' size='large'>
                     {getGroupName(currentWord.word.groupId)}
                   </Tag>
                 </div>
-                {t("review.accuracy")}：
+                {t('review.accuracy')}：
                 <span>
                   {currentWord.word.reviewCount === 0
-                    ? "0"
+                    ? '0'
                     : (
                         (currentWord.word.correctCount /
                           currentWord.word.reviewCount) *
@@ -160,23 +149,23 @@ const Practise = observer(() => {
                 <WordInfo word={currentWord.word} />
                 <div className={styles.cardFoot}>
                   <Button
-                    type="danger"
-                    theme="solid"
-                    size="large"
+                    type='danger'
+                    theme='solid'
+                    size='large'
                     className={styles.button}
                     onClick={resetWord}
                     loading={isResetting}
                   >
-                    {t("practise.resetToNew")}
+                    {t('practise.resetToNew')}
                   </Button>
                   <Button
-                    type="secondary"
-                    theme="solid"
-                    size="large"
+                    type='secondary'
+                    theme='solid'
+                    size='large'
                     className={styles.button}
                     onClick={toNext}
                   >
-                    {t("practise.next")}
+                    {t('practise.next')}
                   </Button>
                 </div>
               </>
@@ -191,13 +180,13 @@ const Practise = observer(() => {
                 </div>
                 <div className={styles.cardFoot}>
                   <Button
-                    type="secondary"
-                    theme="solid"
-                    size="large"
+                    type='secondary'
+                    theme='solid'
+                    size='large'
                     className={styles.button}
                     onClick={() => setShowAnswer(true)}
                   >
-                    {t("review.showAnswer")}
+                    {t('review.showAnswer')}
                   </Button>
                 </div>
               </>
@@ -205,8 +194,8 @@ const Practise = observer(() => {
           </div>
         ) : (
           <div className={styles.completedMessage}>
-            <Text type="secondary" size="normal">
-              {t("review.completed")}
+            <Text type='secondary' size='normal'>
+              {t('review.completed')}
             </Text>
           </div>
         )}

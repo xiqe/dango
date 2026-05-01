@@ -47,6 +47,12 @@ class WordStore {
   updateWords(updatedWords: IWord[]) {
     this.words = updatedWords;
   }
+
+  updateWord(id: string, updates: Partial<IWord>) {
+    this.words = this.words.map((word) =>
+      word.id === id ? { ...word, ...updates } : word
+    );
+  }
 }
 
 const wordStore = new WordStore();

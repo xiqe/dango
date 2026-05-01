@@ -78,14 +78,14 @@ const WordDetail = observer(() => {
   };
 
   const handleReset = async () => {
-    if (!authStore.user?.uid || !id || !word) return;
+    if (!authStore.user?.uid || !id) return;
 
     setResetting(true);
     try {
       const updates = { stage: 0, nextReviewDate: Date.now() };
       await updateWordProgress(authStore.user.uid, id, updates);
-      setWord({ ...word, ...updates });
-      await wordStore.loadWords();
+      wordStore.updateWord(id, updates);
+      navigate('/word');
     } catch (error) {
       console.error('Error resetting word:', error);
     } finally {
