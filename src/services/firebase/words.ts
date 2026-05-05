@@ -9,6 +9,8 @@ import {
   query,
   where,
   serverTimestamp,
+  onSnapshot,
+  Unsubscribe,
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { IWord } from "@/services/types";
@@ -28,6 +30,33 @@ export const getWords = async (userId: string): Promise<IWord[]> => {
     console.error("Error fetching words:", error);
     throw error;
   }
+};
+
+// 实时监听单词数据变化，利用缓存并获取实时更新
+export const subscribeToWords = (
+  userId: string,
+  onData: (words: IWord[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe => {
+  const wordsRef = collection(db, `users/${userId}/words`);
+
+  return onSnapshot(
+    wordsRef,
+    (snapshot) => {
+      const words = snapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          } as IWord)
+      );
+      onData(words);
+    },
+    (error) => {
+      console.error("Error in words subscription:", error);
+      onError?.(error);
+    }
+  );
 };
 
 export const addWord = async (userId: string, word: Omit<IWord, "id">) => {

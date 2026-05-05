@@ -46,14 +46,23 @@ const Review = observer(() => {
     };
   };
 
+  // 只在初始化时设置 currentReview，后续切换由 handleReview 管理
   useEffect(() => {
     const endOfToday = getEndOfDay();
     const reviewWords = wordStore.words.filter(
       (word) => word.nextReviewDate <= endOfToday
     );
-    setCurrentReview(
-      reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
-    );
+
+    // 如果当前没有复习单词，或者当前单词已不在待复习列表中，则设置新单词
+    const currentWordStillValid = currentReview && 
+      reviewWords.some(w => w.id === currentReview.word.id);
+    
+    if (!currentWordStillValid) {
+      setCurrentReview(
+        reviewWords[0] ? getRandomReviewState(reviewWords[0]) : null
+      );
+      setShowAnswer(false);
+    }
   }, [wordStore.words]);
 
   const getGroupName = useCallback(
@@ -124,7 +133,9 @@ const Review = observer(() => {
             nextReviewDate: getNextReviewDate(newStage),
           });
 
-          wordStore.updateWords(updatedWords);
+          // 先重置答案显示状态，避免 MobX 更新触发渲染时短暂显示答案
+          setShowAnswer(false);
+          
           const endOfToday = getEndOfDay();
           const remainingWords = updatedWords.filter(
             (word) => word.nextReviewDate <= endOfToday
@@ -132,7 +143,8 @@ const Review = observer(() => {
           setCurrentReview(
             remainingWords[0] ? getRandomReviewState(remainingWords[0]) : null
           );
-          setShowAnswer(false);
+          
+          wordStore.updateWords(updatedWords);
         } catch (error) {
           console.error("Error updating word progress in Firestore:", error);
         } finally {

@@ -2,17 +2,19 @@ import { makeAutoObservable, runInAction, computed } from "mobx";
 import { IGroup } from "@/services/types";
 import i18n from "i18next";
 import {
-  getGroups,
   createGroup,
   updateGroup,
+  subscribeToGroups,
 } from "@/services/firebase/groups";
 import authStore from "./AuthStore";
+import type { Unsubscribe } from "firebase/firestore";
 
 class GroupStore {
   private rawGroups: IGroup[] = [];
   loading: boolean = false;
   initialized: boolean = false;
   currentGroupId: string = "default";
+  private unsubscribe: Unsubscribe | null = null;
 
   constructor() {
     makeAutoObservable(this, {
@@ -42,22 +44,37 @@ class GroupStore {
     };
   }
 
-  async loadGroups() {
-    if (!authStore.user?.uid || this.loading) return;
+  // 使用实时监听订阅分组数据
+  subscribeGroups() {
+    if (!authStore.user?.uid || this.unsubscribe) return;
 
     this.loading = true;
-    try {
-      const groups = await getGroups(authStore.user.uid);
-      runInAction(() => {
-        this.rawGroups = groups;
-        this.initialized = true;
-      });
-    } catch (error) {
-      console.error("Error loading groups:", error);
-    } finally {
-      runInAction(() => {
-        this.loading = false;
-      });
+
+    this.unsubscribe = subscribeToGroups(
+      authStore.user.uid,
+      (groups) => {
+        runInAction(() => {
+          this.rawGroups = groups;
+          this.initialized = true;
+          this.loading = false;
+        });
+      },
+      (error) => {
+        console.error("Error in groups subscription:", error);
+        runInAction(() => {
+          this.loading = false;
+        });
+      }
+    );
+  }
+
+  // 取消订阅
+  unsubscribeGroups() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+      this.unsubscribe = null;
+      this.initialized = false;
+      this.rawGroups = [];
     }
   }
 

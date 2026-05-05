@@ -13,7 +13,6 @@ import { IWord } from "@/services/types";
 import { addWord } from "@/services/firebase/words";
 import { observer } from "mobx-react-lite";
 import authStore from "@/stores/AuthStore";
-import wordStore from "@/stores/WordStore";
 import groupStore from "@/stores/GroupStore";
 import styles from "./add.module.css";
 
@@ -59,7 +58,7 @@ const Add = observer(() => {
         };
 
         await addWord(authStore.user.uid, newWord);
-        await wordStore.loadWords();
+        // 数据通过实时订阅自动更新到 store，无需手动刷新
 
         setJapanese("");
         setChinese("");
@@ -128,7 +127,7 @@ const Add = observer(() => {
         }
       }
 
-      await wordStore.loadWords();
+      // 数据通过实时订阅自动更新到 store，无需手动刷新
 
       setJsonInput("");
       Toast.success(

@@ -40,6 +40,7 @@ const Practise = observer(() => {
     }));
     setPractiseWords(wordState);
     setCurrentWord(wordState[Math.floor(Math.random() * wordState.length)]);
+    setShowAnswer(false); // 确保切换单词时重置答案显示状态
   }, [wordStore.words, selectedStages, isJapaneseQuestion]);
 
   const getGroupName = useCallback(
@@ -69,10 +70,14 @@ const Practise = observer(() => {
         currentWord.word.id,
         updates,
       );
-      wordStore.updateWord(currentWord.word.id, updates);
 
-      // 跳转到下一个单词
-      toNext();
+      // 先重置答案显示状态和切换单词，避免 MobX 更新触发渲染时短暂显示答案
+      setShowAnswer(false);
+      setCurrentWord(
+        practiseWords[Math.floor(Math.random() * practiseWords.length)],
+      );
+
+      wordStore.updateWord(currentWord.word.id, updates);
     } catch (error) {
       console.error('Error resetting word:', error);
     } finally {
